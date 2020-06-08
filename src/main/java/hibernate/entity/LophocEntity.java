@@ -1,0 +1,45 @@
+package hibernate.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "lophoc", schema = "qlsv", catalog = "")
+public class LophocEntity {
+    @Id
+    private String malop;
+
+    public LophocEntity(String lop) {
+        malop = lop;
+    }
+
+
+    @Column(name = "malop")
+    public String getMalop() {
+        return malop;
+    }
+
+    public void setMalop(String malop) {
+        this.malop = malop;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LophocEntity that = (LophocEntity) o;
+
+        if (malop != null ? !malop.equals(that.malop) : that.malop != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return malop != null ? malop.hashCode() : 0;
+    }
+}
