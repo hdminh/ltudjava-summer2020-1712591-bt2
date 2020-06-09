@@ -1,15 +1,17 @@
 package hibernate.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "lophoc", schema = "qlsv", catalog = "")
 public class LophocEntity {
     @Id
     private String malop;
+
+    public LophocEntity(){
+
+    }
 
     public LophocEntity(String lop) {
         malop = lop;
@@ -25,6 +27,8 @@ public class LophocEntity {
         this.malop = malop;
     }
 
+    @OneToMany(targetEntity =SinhvienEntity.class, mappedBy = "lophoc", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    List<SinhvienEntity> sinhvienList;
 
     @Override
     public boolean equals(Object o) {

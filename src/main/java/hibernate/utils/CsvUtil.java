@@ -1,5 +1,6 @@
 package hibernate.utils;
 
+import hibernate.dao.LophocDao;
 import hibernate.entity.LophocEntity;
 import hibernate.entity.SinhvienEntity;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvUtil {
-    JFileChooser fc = new JFileChooser();
+    private static JFileChooser fc = new JFileChooser();
 
 //    public void ExportCsv(List<SinhvienEntity> studentList){
 //        FileWriter fw = null;
@@ -68,9 +69,11 @@ public class CsvUtil {
             fr = new FileReader(file.getAbsolutePath());
             br = new BufferedReader(fr);
             String lop = br.readLine();
+            LophocDao lophocDao = new LophocDao();
+            List<LophocEntity> lophoc = lophocDao.readListLopHoc();
             LophocEntity lophocEntity = new LophocEntity(lop);
-
-
+            if (!lophoc.contains(lophocEntity))
+                lophocDao.add(lop);
             while ((line = br.readLine()) != null){
                 String[] list = line.split(",");
                 if (list.length > 0){

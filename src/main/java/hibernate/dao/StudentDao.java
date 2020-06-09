@@ -14,20 +14,16 @@ import static hibernate.utils.HibernateUtils.*;
 import hibernate.utils.CsvUtil.*;
 
 public class StudentDao {
-    private List<SinhvienEntity> listStudents;
 
-    public StudentDao() {
-        this.listStudents = readListStudents();
+    public StudentDao(){
     }
 
     public void writeToDB(List<SinhvienEntity> students) {
-
-        listStudents = students;
         Session session = openSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            for (SinhvienEntity sv : listStudents) {
+            for (SinhvienEntity sv : students) {
                 session.save(sv);
             }
             tx.commit();
@@ -42,7 +38,6 @@ public class StudentDao {
     }
 
     public List<SinhvienEntity> readListStudents() {
-        List<SinhvienEntity> students = new ArrayList<SinhvienEntity>();
         Session session = openSession();
         String query = "FROM SinhvienEntity";
         List<SinhvienEntity> sinhvien = session.createQuery(query, SinhvienEntity.class).list();
@@ -58,14 +53,5 @@ public class StudentDao {
 
     public boolean delete(SinhvienEntity student) {
         return true;
-    }
-
-
-    public List<SinhvienEntity> getListStudents() {
-        return listStudents;
-    }
-
-    public void setListStudents(List<SinhvienEntity> listStudents) {
-       this.listStudents = listStudents;
     }
 }

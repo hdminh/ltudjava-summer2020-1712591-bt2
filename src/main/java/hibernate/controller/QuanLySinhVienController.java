@@ -2,30 +2,39 @@ package hibernate.controller;
 
 import hibernate.dao.StudentDao;
 import hibernate.entity.SinhvienEntity;
+import hibernate.utils.CsvUtil;
 import hibernate.view.QuanLySinhVienView;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 public class QuanLySinhVienController {
-        private StudentDao studentDao;
-        private QuanLySinhVienView studentView;
+    private StudentDao studentDao;
+    private QuanLySinhVienView studentView;
+    private List<SinhvienEntity> listStudents;
+
+    public QuanLySinhVienController(){
+        listStudents = studentDao.readListStudents();
+    }
 
     public QuanLySinhVienController(QuanLySinhVienView view) {
-            this.studentView = view;
-            studentDao = new StudentDao();
-
-            view.addAddStudentListener(new AddStudentListener());
-            view.addEdiStudentListener(new EditStudentListener());
-            view.addDeleteStudentListener(new DeleteStudentListener());
-            view.addClearListener(new ClearStudentListener());
-            }
+        this.studentView = view;
+        studentDao = new StudentDao();
+        listStudents = studentDao.readListStudents();
+        view.addAddStudentListener(new AddStudentListener());
+        view.addEdiStudentListener(new EditStudentListener());
+        view.addDeleteStudentListener(new DeleteStudentListener());
+        view.addClearListener(new ClearStudentListener());
+        view.addImportListener(new ImportStudentListener());
+        view.addListStudentSelectionListener(new ListStudentSelectionListener());
+        }
 
         public void showStudentView() {
-            List<SinhvienEntity> studentList = studentDao.getListStudents();
             studentView.setVisible(true);
-            studentView.showListStudents(studentList);
+            studentView.showListStudents(listStudents);
         }
 
         /**
@@ -40,7 +49,7 @@ public class QuanLySinhVienController {
                 if (student != null) {
                     studentDao.add(student);
                     studentView.showStudent(student);
-                    studentView.showListStudents(studentDao.getListStudents());
+                    studentView.showListStudents(listStudents);
                     studentView.showMessage("Thêm thành công!");
                 }
             }
@@ -58,7 +67,7 @@ public class QuanLySinhVienController {
                 if (student != null) {
                     studentDao.edit(student);
                     studentView.showStudent(student);
-                    studentView.showListStudents(studentDao.getListStudents());
+                    studentView.showListStudents(listStudents);
                     studentView.showMessage("Cập nhật thành công!");
                 }
             }
@@ -76,7 +85,7 @@ public class QuanLySinhVienController {
                 if (student != null) {
                     studentDao.delete(student);
                     studentView.clearStudentInfo();
-                    studentView.showListStudents(studentDao.getListStudents());
+                    studentView.showListStudents(listStudents);
                     studentView.showMessage("Xóa thành công!");
                 }
             }
@@ -94,10 +103,18 @@ public class QuanLySinhVienController {
             }
         }
 
-        /**
-         * Lớp SortStudentGPAListener
-         * chứa cài đặt cho sự kiện click button "Sort By GPA"
-         *
-         * @author viettuts.vn
-         */
+    class ImportStudentListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            List<SinhvienEntity> sinhvien = CsvUtil.ImportCsv();
+            studentDao.writeToDB(sinhvien);
+            listStudents = studentDao.readListStudents();
+            studentView.showListStudents(listStudents);
+        }
+    }
+
+        class ListStudentSelectionListener implements ListSelectionListener {
+            public void valueChanged(ListSelectionEvent e) {
+                studentView.fillStudentFromSelectedRow();
+            }
+        }
 }

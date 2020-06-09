@@ -10,7 +10,6 @@ public class SinhvienEntity {
     private String hoten;
     private String gioitinh;
     private String cmnd;
-    private LophocEntity lop;
 
 
     @Column(name = "mssv")
@@ -52,6 +51,17 @@ public class SinhvienEntity {
         this.cmnd = cmnd;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lop")
+    private LophocEntity lophoc;
+    public LophocEntity getLop() {
+        return lophoc;
+    }
+
+    public void setLop(LophocEntity lop) {
+        this.lophoc = lop;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,13 +86,4 @@ public class SinhvienEntity {
         return result;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lop", referencedColumnName = "malop")
-    public LophocEntity getLop() {
-        return lop;
-    }
-
-    public void setLop(LophocEntity lop) {
-        this.lop = lop;
-    }
 }
