@@ -2,6 +2,7 @@ package hibernate.utils;
 
 import hibernate.dao.LophocDao;
 import hibernate.entity.LophocEntity;
+import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
 
 import javax.swing.*;
@@ -90,5 +91,43 @@ public class CsvUtil {
             e.printStackTrace();
         }
         return students;
+    }
+
+    public static List<MonhocEntity> ImportMonhoc(){
+        BufferedReader br;
+        List<MonhocEntity> monhocList = new ArrayList<MonhocEntity>();
+        String line;
+        FileReader fr;
+        fc.setDialogTitle("Chọn file để Import");
+        File file = null;
+        int result = fc.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION){
+            file = fc.getSelectedFile();
+        }
+        try {
+            assert file != null;
+            fr = new FileReader(file.getAbsolutePath());
+            br = new BufferedReader(fr);
+            String lop = br.readLine();
+            LophocDao lophocDao = new LophocDao();
+            List<LophocEntity> lophoc = lophocDao.readListLopHoc();
+            LophocEntity lophocEntity = new LophocEntity(lop);
+            if (!lophoc.contains(lophocEntity))
+                lophocDao.add(lop);
+            while ((line = br.readLine()) != null){
+                String[] list = line.split(",");
+                if (list.length > 0){
+                    MonhocEntity monhoc = new MonhocEntity();
+                    monhoc.setMamon(list[0]);
+                    monhoc.setTenmonhoc(list[1]);
+                    monhoc.setPhonghoc(list[2]);
+                    monhoc.setLophoc(lophocEntity);
+                    monhocList.add(monhoc);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return monhocList;
     }
 }

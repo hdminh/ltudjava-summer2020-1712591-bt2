@@ -1,6 +1,8 @@
 package hibernate.view;
 
 import hibernate.dao.LophocDao;
+import hibernate.dao.StudentDao;
+import hibernate.entity.LophocEntity;
 import hibernate.entity.SinhvienEntity;
 
 import javax.swing.*;
@@ -16,6 +18,11 @@ import hibernate.utils.HibernateUtils.*;
 
 public class QuanLySinhVienView extends JFrame implements ActionListener, ListSelectionListener {
     LophocDao lophocDao = new LophocDao();
+
+    String [] gioitinh = {"Nam", "Nữ"};
+    String [] lop;
+    String [] sortlop;
+
     private static final long serialVersionUID = 1L;
     private JButton addStudentBtn;
     private JButton editStudentBtn;
@@ -30,12 +37,15 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
     private JLabel cmndLabel;
     private JLabel gioitinhLabel;
     private JLabel lopLabel;
+    private JLabel chonlopLabel;
 
     private JTextField mssvField;
     private JTextField hotenField;
     private JTextField cmndField;
     private JComboBox gioitinhBox;
     private JComboBox lopBox;
+    private JComboBox chonlopBox;
+
 
     // định nghĩa các cột của bảng student
     private String [] columnNames = new String [] {
@@ -65,15 +75,19 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         cmndLabel = new JLabel("CMND");
         gioitinhLabel = new JLabel("Giới tính");
         lopLabel = new JLabel("Lớp");
+        chonlopLabel = new JLabel("Chọn lớp");
+        List<String> lophoc = lophocDao.readMaLop();
 
-        String [] gioitinh = {"Nam", "Nữ"};
-        String [] lop = lophocDao.readMaLop().toArray(new String[0]);
+        lop = lophoc.toArray(new String[0]);
+        lophoc.add(0, "Tất cả");
+        sortlop = lophoc.toArray(new String[0]);
         // khởi tạo các trường nhập dữ liệu cho student
         mssvField = new JTextField(10);
         hotenField = new JTextField(15);
         cmndField = new JTextField(10);
         gioitinhBox = new JComboBox(gioitinh);
         lopBox = new JComboBox(lop);
+        chonlopBox = new JComboBox(sortlop);
         // cài đặt các cột và data cho bảng student
         studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
         jScrollPaneStudentTable.setViewportView(studentTable);
@@ -98,12 +112,14 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         panel.add(cmndLabel);
         panel.add(gioitinhLabel);
         panel.add(lopLabel);
+        panel.add(chonlopLabel);
 
         panel.add(mssvField);
         panel.add(hotenField);
         panel.add(cmndField);
         panel.add(gioitinhBox);
         panel.add(lopBox);
+        panel.add(chonlopBox);
 
         layout.putConstraint(SpringLayout.WEST, mssvLabel, 10, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, mssvLabel, 10, SpringLayout.NORTH, panel);
@@ -144,6 +160,12 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         layout.putConstraint(SpringLayout.WEST, importBtn, 300, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, importBtn, 330, SpringLayout.NORTH, panel);
 
+        layout.putConstraint(SpringLayout.WEST, chonlopLabel, 80, SpringLayout.WEST, importBtn);
+        layout.putConstraint(SpringLayout.NORTH, chonlopLabel, 0, SpringLayout.NORTH, importBtn);
+
+        layout.putConstraint(SpringLayout.WEST, chonlopBox, 60, SpringLayout.WEST, chonlopLabel);
+        layout.putConstraint(SpringLayout.NORTH, chonlopBox, 0, SpringLayout.NORTH, chonlopLabel);
+
         this.add(panel);
         this.pack();
         this.setTitle("Student Information");
@@ -167,25 +189,59 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
             students[i][0] = (i + 1);
             students[i][1] = list.get(i).getMssv();
             students[i][2] = list.get(i).getHoten();
-            students[i][3] = list.get(i).getGioitinh();
-            students[i][4] = list.get(i).getCmnd();
+            students[i][3] = list.get(i).getCmnd();
+            students[i][4] = list.get(i).getGioitinh();
             students[i][5] = list.get(i).getLop().getMalop();
         }
         studentTable.setModel(new DefaultTableModel(students, columnNames));
     }
 
-    /**
-     * điền thông tin của hàng được chọn từ bảng student
-     * vào các trường tương ứng của student.
-     */
+    public void showStudent(SinhvienEntity student) {
+        mssvField.setText("" + student.getMssv());
+        hotenField.setText(student.getHoten());
+        cmndField.setText("" + student.getCmnd());
+        if (student.getGioitinh().trim().equals("Nam"))
+            gioitinhBox.setSelectedIndex(0);
+        else
+            gioitinhBox.setSelectedIndex(1);
+        int index = 0;
+        String lopStr = student.getLop().getMalop().trim();
+        do {
+            if (lop[index].equals(lopStr)){
+                lopBox.setSelectedIndex(index);
+                break;
+            }else
+                index++;
+        }
+        while (true);
+        // enable Edit and Delete buttons
+        editStudentBtn.setEnabled(true);
+        deleteStudentBtn.setEnabled(true);
+        // disable Add button
+        addStudentBtn.setEnabled(false);
+    }
+
     public void fillStudentFromSelectedRow() {
         // lấy chỉ số của hàng được chọn
         int row = studentTable.getSelectedRow();
         if (row >= 0) {
-            mssvField.setText(studentTable.getModel().getValueAt(row, 0).toString());
-            hotenField.setText(studentTable.getModel().getValueAt(row, 1).toString());
-            cmndField.setText(studentTable.getModel().getValueAt(row, 2).toString());
-            gioitinhBox.setSelectedIndex(0);
+            mssvField.setText(studentTable.getModel().getValueAt(row, 1).toString());
+            hotenField.setText(studentTable.getModel().getValueAt(row, 2).toString());
+            cmndField.setText(studentTable.getModel().getValueAt(row, 3).toString());
+            if (studentTable.getModel().getValueAt(row, 4).toString().trim().equals("Nam"))
+                gioitinhBox.setSelectedIndex(0);
+            else
+                gioitinhBox.setSelectedIndex(1);
+            int index = 0;
+            String lopStr = studentTable.getModel().getValueAt(row, 5).toString().trim();
+            do {
+                if (lop[index].equals(lopStr)){
+                    lopBox.setSelectedIndex(index);
+                    break;
+                }else
+                    index++;
+            }
+            while (true);
 
             // enable Edit and Delete buttons
             editStudentBtn.setEnabled(true);
@@ -195,9 +251,6 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         }
     }
 
-    /**
-     * xóa thông tin student
-     */
     public void clearStudentInfo() {
         mssvField.setText("");
         hotenField.setText("");
@@ -207,28 +260,6 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         deleteStudentBtn.setEnabled(false);
         // enable Add button
         addStudentBtn.setEnabled(true);
-    }
-
-    /**
-     * hiện thị thông tin student
-     *
-     * @param student
-     */
-    public void showStudent(SinhvienEntity student) {
-        mssvField.setText("" + student.getMssv());
-        hotenField.setText(student.getHoten());
-        cmndField.setText("" + student.getCmnd());
-        if (student.getGioitinh().equals("Nam")) {
-            gioitinhBox.setSelectedIndex(0);
-        }
-        else {
-            gioitinhBox.setSelectedIndex(1);
-        }
-
-        editStudentBtn.setEnabled(true);
-        deleteStudentBtn.setEnabled(true);
-        // disable Add button
-        addStudentBtn.setEnabled(false);
     }
 
     public SinhvienEntity getStudentInfo() {
@@ -244,6 +275,8 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
             student.setHoten(hotenField.getText().trim());
             student.setCmnd(cmndField.getText().trim());
             student.setGioitinh(gioitinhBox.getSelectedItem().toString());
+            LophocEntity lophocEntity = new LophocEntity(lopBox.getSelectedItem().toString());
+            student.setLop(lophocEntity);
             return student;
         } catch (Exception e) {
             showMessage(e.getMessage());
@@ -284,8 +317,33 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         importBtn.addActionListener(listener);
     }
 
-    public void addSortStudentGPAListener(ActionListener listener) {
-        importBtn.addActionListener(listener);
+    public void addSortListener(ActionListener listener) {
+        chonlopBox.addActionListener(listener);
+    }
+
+    public int getSortIndex(){
+        String item = chonlopBox.getSelectedItem().toString();
+        int index = 0;
+        do {
+            if (sortlop[index].equals(item)){
+                chonlopBox.setSelectedIndex(index);
+                break;
+            }else
+                index++;
+        }
+        while (true);
+        return index;
+    }
+
+    public void sort(int index, StudentDao studentDao){
+        if (index == 0) {
+            List<SinhvienEntity> sinhvien = studentDao.readListStudents();
+            showListStudents(sinhvien);
+        }
+        else{
+            List<SinhvienEntity> sinhvien = studentDao.readListByLop(sortlop[index]);
+            showListStudents(sinhvien);
+        }
     }
 
     public void addListStudentSelectionListener(ListSelectionListener listener) {

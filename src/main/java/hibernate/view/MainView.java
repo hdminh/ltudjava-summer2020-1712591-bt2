@@ -13,14 +13,12 @@ public class MainView extends JFrame implements ActionListener {
 
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        LoginView loginView = new LoginView();
         JTabbedPane pane = new JTabbedPane();
-//        pane.addTab("Login1", panel);
-//        pane.addTab("Login2", panel1);
+        //pane.add(qlsvView);
         this.add(pane);
         this.pack();
         this.setTitle("Portal HCMUS");
-        this.setSize(1280, 720);
+        this.setSize(800, 420);
         this.setResizable(false);
     }
 

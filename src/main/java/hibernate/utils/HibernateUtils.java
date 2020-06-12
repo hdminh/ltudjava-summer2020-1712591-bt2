@@ -9,11 +9,11 @@ import org.hibernate.cfg.Configuration;
 
 
 public class HibernateUtils {
-    private static StandardServiceRegistry registry;
+    //private static StandardServiceRegistry registry;
     private static SessionFactory sessionFactory;
 
     static{
-        registry = new StandardServiceRegistryBuilder().configure().build();
+        //registry = new StandardServiceRegistryBuilder().configure().build();
         sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 

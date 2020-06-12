@@ -10,19 +10,21 @@ import org.hibernate.cfg.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hibernate.utils.HibernateUtils.openSession;
+
 
 public class LophocDao {
-    SessionFactory sf;
+    //SessionFactory sf;
     private List<LophocEntity> listLophoc;
 
     public LophocDao(){
-        sf = new Configuration().configure().buildSessionFactory();
+        //sf = new Configuration().configure().buildSessionFactory();
         listLophoc = readListLopHoc();
 
     }
 
     public List<LophocEntity> readListLopHoc() {
-        Session session = sf.openSession();
+        Session session = openSession();
         String query = "FROM LophocEntity";
         List<LophocEntity> lophoc = session.createQuery(query, LophocEntity.class).list();
         return lophoc;
@@ -39,7 +41,7 @@ public class LophocDao {
 
     public void add(String malop){
         LophocEntity lophocEntity = new LophocEntity(malop);
-        Session session = sf.openSession();
+        Session session = openSession();
         Transaction tx = null;
         try{
             tx = session.beginTransaction();
@@ -53,5 +55,7 @@ public class LophocDao {
         finally {
             session.close();
         }
+
+
     }
 }

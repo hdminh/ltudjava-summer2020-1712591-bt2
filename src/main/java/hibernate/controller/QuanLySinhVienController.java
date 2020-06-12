@@ -30,6 +30,7 @@ public class QuanLySinhVienController {
         view.addClearListener(new ClearStudentListener());
         view.addImportListener(new ImportStudentListener());
         view.addListStudentSelectionListener(new ListStudentSelectionListener());
+        view.addSortListener(new SortStudentListener());
         }
 
         public void showStudentView() {
@@ -37,66 +38,47 @@ public class QuanLySinhVienController {
             studentView.showListStudents(listStudents);
         }
 
-        /**
-         * Lớp AddStudentListener
-         * chứa cài đặt cho sự kiện click button "Add"
-         *
-         * @author viettuts.vn
-         */
+        public void refreshTable(){
+            listStudents = studentDao.readListStudents();
+            studentView.showListStudents(listStudents);
+        }
+
         class AddStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 SinhvienEntity student = studentView.getStudentInfo();
                 if (student != null) {
                     studentDao.add(student);
                     studentView.showStudent(student);
-                    studentView.showListStudents(listStudents);
+                    refreshTable();
                     studentView.showMessage("Thêm thành công!");
                 }
             }
         }
 
-        /**
-         * Lớp EditStudentListener
-         * chứa cài đặt cho sự kiện click button "Edit"
-         *
-         * @author viettuts.vn
-         */
         class EditStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 SinhvienEntity student = studentView.getStudentInfo();
                 if (student != null) {
                     studentDao.edit(student);
                     studentView.showStudent(student);
-                    studentView.showListStudents(listStudents);
+                    refreshTable();
                     studentView.showMessage("Cập nhật thành công!");
                 }
             }
         }
 
-        /**
-         * Lớp DeleteStudentListener
-         * chứa cài đặt cho sự kiện click button "Delete"
-         *
-         * @author viettuts.vn
-         */
         class DeleteStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 SinhvienEntity student = studentView.getStudentInfo();
                 if (student != null) {
                     studentDao.delete(student);
                     studentView.clearStudentInfo();
-                    studentView.showListStudents(listStudents);
+                    refreshTable();
                     studentView.showMessage("Xóa thành công!");
                 }
             }
         }
 
-        /**
-         * Lớp ClearStudentListener
-         * chứa cài đặt cho sự kiện click button "Clear"
-         *
-         * @author viettuts.vn
-         */
         class ClearStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 studentView.clearStudentInfo();
@@ -109,6 +91,12 @@ public class QuanLySinhVienController {
             studentDao.writeToDB(sinhvien);
             listStudents = studentDao.readListStudents();
             studentView.showListStudents(listStudents);
+        }
+    }
+
+    class SortStudentListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            studentView.sort(studentView.getSortIndex(), studentDao);
         }
     }
 
