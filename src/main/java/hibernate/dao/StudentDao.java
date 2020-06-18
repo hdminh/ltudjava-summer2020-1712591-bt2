@@ -1,18 +1,13 @@
 package hibernate.dao;
 
-import hibernate.entity.LophocEntity;
 import hibernate.entity.SinhvienEntity;
-import hibernate.utils.CsvUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static hibernate.utils.CsvUtil.*;
 import static hibernate.utils.HibernateUtils.*;
-import hibernate.utils.CsvUtil.*;
 
 public class StudentDao {
 
@@ -45,10 +40,19 @@ public class StudentDao {
         return sinhvien;
     }
 
+    public List<String> readListMssv(){
+        List<String> mssv = new ArrayList<String>();
+        List<SinhvienEntity> sinhvien = readListStudents();
+        for (SinhvienEntity sv: sinhvien){
+            mssv.add(sv.getMssv());
+        }
+        return mssv;
+    }
+
     public List<SinhvienEntity> readListByLop(String malop){
         Session session = openSession();
-        String query = "FROM SinhvienEntity  WHERE lop = :malop";
-        List<SinhvienEntity> sinhvien = session.createQuery(query, SinhvienEntity.class).setParameter("malop", malop).list();
+        String query = "SELECT sv FROM SinhvienEntity sv  WHERE sv.lophoc = '" + malop + "'";
+        List<SinhvienEntity> sinhvien = session.createQuery(query, SinhvienEntity.class).list();
         return sinhvien;
     }
 

@@ -4,8 +4,12 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "bangdiem", schema = "qlsv", catalog = "")
+@IdClass(BangdiemEntityPK.class)
 public class BangdiemEntity {
-    private int mabang;
+    private String sinhvien;
+    private String hoten;
+    private String lophoc;
+    private String monhoc;
     private Double diemgk;
     private Double diemck;
     private Double diemkhac;
@@ -13,13 +17,43 @@ public class BangdiemEntity {
     private Byte dau;
 
     @Id
-    @Column(name = "mabang")
-    public int getMabang() {
-        return mabang;
+    @Column(name = "sinhvien")
+    public String getSinhvien() {
+        return sinhvien;
     }
 
-    public void setMabang(int mabang) {
-        this.mabang = mabang;
+    public void setSinhvien(String sinhvien) {
+        this.sinhvien = sinhvien;
+    }
+
+    @Basic
+    @Column(name = "hoten")
+    public String getHoten() {
+        return hoten;
+    }
+
+    public void setHoten(String hoten) {
+        this.hoten = hoten;
+    }
+
+    @Basic
+    @Column(name = "lophoc")
+    public String getLophoc() {
+        return lophoc;
+    }
+
+    public void setLophoc(String lophoc) {
+        this.lophoc = lophoc;
+    }
+
+    @Id
+    @Column(name = "monhoc")
+    public String getMonhoc() {
+        return monhoc;
+    }
+
+    public void setMonhoc(String monhoc) {
+        this.monhoc = monhoc;
     }
 
     @Basic
@@ -79,7 +113,10 @@ public class BangdiemEntity {
 
         BangdiemEntity that = (BangdiemEntity) o;
 
-        if (mabang != that.mabang) return false;
+        if (sinhvien != null ? !sinhvien.equals(that.sinhvien) : that.sinhvien != null) return false;
+        if (hoten != null ? !hoten.equals(that.hoten) : that.hoten != null) return false;
+        if (lophoc != null ? !lophoc.equals(that.lophoc) : that.lophoc != null) return false;
+        if (monhoc != null ? !monhoc.equals(that.monhoc) : that.monhoc != null) return false;
         if (diemgk != null ? !diemgk.equals(that.diemgk) : that.diemgk != null) return false;
         if (diemck != null ? !diemck.equals(that.diemck) : that.diemck != null) return false;
         if (diemkhac != null ? !diemkhac.equals(that.diemkhac) : that.diemkhac != null) return false;
@@ -91,7 +128,10 @@ public class BangdiemEntity {
 
     @Override
     public int hashCode() {
-        int result = mabang;
+        int result = sinhvien != null ? sinhvien.hashCode() : 0;
+        result = 31 * result + (hoten != null ? hoten.hashCode() : 0);
+        result = 31 * result + (lophoc != null ? lophoc.hashCode() : 0);
+        result = 31 * result + (monhoc != null ? monhoc.hashCode() : 0);
         result = 31 * result + (diemgk != null ? diemgk.hashCode() : 0);
         result = 31 * result + (diemck != null ? diemck.hashCode() : 0);
         result = 31 * result + (diemkhac != null ? diemkhac.hashCode() : 0);

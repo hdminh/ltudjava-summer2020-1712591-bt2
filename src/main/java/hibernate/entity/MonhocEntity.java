@@ -1,6 +1,7 @@
 package hibernate.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "monhoc", schema = "qlsv", catalog = "")
@@ -9,6 +10,10 @@ public class MonhocEntity {
     private String tenmonhoc;
     private String phonghoc;
     private LophocEntity lophoc;
+
+    public MonhocEntity getMonhocById(String monhoc) {
+        return this;
+    }
 
     @Id
     @Column(name = "mamon")

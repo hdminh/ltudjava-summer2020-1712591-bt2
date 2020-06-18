@@ -18,6 +18,7 @@ import hibernate.utils.HibernateUtils.*;
 
 public class QuanLySinhVienView extends JFrame implements ActionListener, ListSelectionListener {
     LophocDao lophocDao = new LophocDao();
+    StudentDao studentDao = new StudentDao();
 
     String [] gioitinh = {"Nam", "Nữ"};
     String [] lop;
@@ -91,13 +92,12 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         // cài đặt các cột và data cho bảng student
         studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
         jScrollPaneStudentTable.setViewportView(studentTable);
-        jScrollPaneStudentTable.setPreferredSize(new Dimension(480, 300));
+        jScrollPaneStudentTable.setPreferredSize(new Dimension(650, 500));
 
         // tạo spring layout
         SpringLayout layout = new SpringLayout();
         // tạo đối tượng panel để chứa các thành phần của màn hình quản lý Student
         JPanel panel = new JPanel();
-        panel.setSize(800, 420);
         panel.setLayout(layout);
         panel.add(jScrollPaneStudentTable);
 
@@ -157,8 +157,9 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         layout.putConstraint(SpringLayout.WEST, clearBtn, 60, SpringLayout.WEST, deleteStudentBtn);
 
         layout.putConstraint(SpringLayout.NORTH, deleteStudentBtn, 240, SpringLayout.NORTH, panel);
+
         layout.putConstraint(SpringLayout.WEST, importBtn, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, importBtn, 330, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.SOUTH, importBtn, 50, SpringLayout.SOUTH, jScrollPaneStudentTable);
 
         layout.putConstraint(SpringLayout.WEST, chonlopLabel, 80, SpringLayout.WEST, importBtn);
         layout.putConstraint(SpringLayout.NORTH, chonlopLabel, 0, SpringLayout.NORTH, importBtn);
@@ -169,7 +170,6 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         this.add(panel);
         this.pack();
         this.setTitle("Student Information");
-        this.setSize(800, 420);
         // disable Edit and Delete buttons
         editStudentBtn.setEnabled(false);
         deleteStudentBtn.setEnabled(false);
@@ -317,25 +317,52 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         importBtn.addActionListener(listener);
     }
 
+    public void refreshComboBox(){
+        List<String> lophoc = lophocDao.readMaLop();
+        lop = lophoc.toArray(new String[0]);
+        lophoc.add(0, "Tất cả");
+        sortlop = lophoc.toArray(new String[0]);
+        int sortsize = sortlop.length;
+        int index = 0;
+        if (chonlopBox.getItemCount() > 0) {
+            chonlopBox.removeAllItems();
+        }
+        while (index < sortsize){
+            chonlopBox.addItem(sortlop[index]);
+            index++;
+        }
+        sortsize = lop.length;
+        index = 0;
+        lopBox.removeAllItems();
+        while (index < sortsize){
+            lopBox.addItem(lop[index]);
+            index++;
+        }
+    }
+
     public void addSortListener(ActionListener listener) {
         chonlopBox.addActionListener(listener);
     }
 
     public int getSortIndex(){
-        String item = chonlopBox.getSelectedItem().toString();
+        String item = "";
         int index = 0;
-        do {
-            if (sortlop[index].equals(item)){
-                chonlopBox.setSelectedIndex(index);
-                break;
-            }else
-                index++;
+        if (chonlopBox.getItemCount() > 0) {
+            item = chonlopBox.getSelectedItem().toString();
+            index = 0;
+            do {
+                if (sortlop[index].equals(item)) {
+                    chonlopBox.setSelectedIndex(index);
+                    break;
+                } else
+                    index++;
+            }
+            while (true);
         }
-        while (true);
         return index;
     }
 
-    public void sort(int index, StudentDao studentDao){
+    public void sort(int index){
         if (index == 0) {
             List<SinhvienEntity> sinhvien = studentDao.readListStudents();
             showListStudents(sinhvien);

@@ -1,6 +1,7 @@
 package hibernate.view;
 
 
+import hibernate.dao.UserDao;
 import hibernate.entity.UserEntity;
 
 import javax.swing.*;
@@ -16,6 +17,7 @@ public class LoginView extends JFrame implements ActionListener {
     private JTextField usernameField;
     private JButton loginBtn;
 
+    UserDao userDao = new UserDao();
     public LoginView(){
         initComponents();
     }
@@ -65,7 +67,7 @@ public class LoginView extends JFrame implements ActionListener {
     }
 
     public UserEntity getUser() {
-        return new UserEntity(usernameField.getText(), String.copyValueOf(passwordField.getPassword()));
+        return new UserEntity(usernameField.getText().trim(), String.copyValueOf(passwordField.getPassword()).trim());
     }
 
     public void addLoginListener(ActionListener listener) {

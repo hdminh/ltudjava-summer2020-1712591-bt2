@@ -90,4 +90,11 @@ public class MonhocDao {
             return true;
         }
     }
+
+    public List<MonhocEntity> readListByLop(String lop) {
+        Session session = openSession();
+        String query = "SELECT sv FROM MonhocEntity sv  WHERE sv.lophoc = '" + lop + "'";
+        List<MonhocEntity> list = session.createQuery(query, MonhocEntity.class).list();
+        return list;
+    }
 }

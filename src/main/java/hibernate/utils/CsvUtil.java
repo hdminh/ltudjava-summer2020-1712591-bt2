@@ -65,6 +65,8 @@ public class CsvUtil {
         if (result == JFileChooser.APPROVE_OPTION){
             file = fc.getSelectedFile();
         }
+        if (file == null)
+            return null;
         try {
             assert file != null;
             fr = new FileReader(file.getAbsolutePath());
@@ -104,8 +106,10 @@ public class CsvUtil {
         if (result == JFileChooser.APPROVE_OPTION){
             file = fc.getSelectedFile();
         }
+        if (file == null){
+            return null;
+        }
         try {
-            assert file != null;
             fr = new FileReader(file.getAbsolutePath());
             br = new BufferedReader(fr);
             String lop = br.readLine();

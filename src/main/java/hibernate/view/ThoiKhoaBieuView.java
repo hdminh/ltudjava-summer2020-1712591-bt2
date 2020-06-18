@@ -1,6 +1,7 @@
 package hibernate.view;
 
 import hibernate.dao.LophocDao;
+import hibernate.dao.MonhocDao;
 import hibernate.entity.LophocEntity;
 import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
@@ -14,11 +15,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class ThoiKhoaBieuView extends JFrame {
+public class ThoiKhoaBieuView extends JFrame implements ActionListener{
     LophocDao lophocDao = new LophocDao();
-
+    MonhocDao monhocDao = new MonhocDao();
     String [] gioitinh = {"Nam", "Nữ"};
     String [] lop;
+    String [] chonlop;
 
     private static final long serialVersionUID = 1L;
     private JButton addMonhocBtn;
@@ -33,11 +35,13 @@ public class ThoiKhoaBieuView extends JFrame {
     private JLabel tenmonLabel;
     private JLabel phongLabel;
     private JLabel lopLabel;
+    private JLabel chonlopLabel;
 
     private JTextField mamonField;
     private JTextField tenmonField;
     private JTextField phongField;
     private JComboBox lopBox;
+    private JComboBox chonlopBox;
 
     // định nghĩa các cột của bảng student
     private String [] columnNames = new String [] {
@@ -66,22 +70,28 @@ public class ThoiKhoaBieuView extends JFrame {
         tenmonLabel = new JLabel("Tên môn");
         phongLabel = new JLabel("Phòng học");;
         lopLabel = new JLabel("Lớp");
+        chonlopLabel = new JLabel("Chọn lớp");
+        List<String> lophoc = lophocDao.readMaLop();
 
         lop = lophocDao.readMaLop().toArray(new String[0]);
+        lophoc.add(0, "Tất cả");
+        chonlop = lophoc.toArray(new String[0]);
         // khởi tạo các trường nhập dữ liệu cho student
         mamonField = new JTextField(10);
         tenmonField = new JTextField(15);
         phongField = new JTextField(10);
         lopBox = new JComboBox(lop);
+        chonlopBox = new JComboBox(chonlop);
+
         // cài đặt các cột và data cho bảng môn học
         monhocTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
         jScrollPaneMonhocTable.setViewportView(monhocTable);
-        jScrollPaneMonhocTable.setPreferredSize(new Dimension(480, 300));
+        jScrollPaneMonhocTable.setPreferredSize(new Dimension(650, 500));
 
         // tạo spring layout
         SpringLayout layout = new SpringLayout();
         JPanel panel = new JPanel();
-        panel.setSize(800, 420);
+        panel.setSize(1000, 700);
         panel.setLayout(layout);
         panel.add(jScrollPaneMonhocTable);
 
@@ -95,11 +105,13 @@ public class ThoiKhoaBieuView extends JFrame {
         panel.add(tenmonLabel);
         panel.add(phongLabel);
         panel.add(lopLabel);
+        panel.add(chonlopLabel);
 
         panel.add(mamonField);
         panel.add(tenmonField);
         panel.add(phongField);
         panel.add(lopBox);
+        panel.add(chonlopBox);
 
         layout.putConstraint(SpringLayout.WEST, mamonLabel, 10, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, mamonLabel, 10, SpringLayout.NORTH, panel);
@@ -133,13 +145,20 @@ public class ThoiKhoaBieuView extends JFrame {
         layout.putConstraint(SpringLayout.WEST, clearBtn, 60, SpringLayout.WEST, deleteMonhocBtn);
 
         layout.putConstraint(SpringLayout.NORTH, deleteMonhocBtn, 240, SpringLayout.NORTH, panel);
+
         layout.putConstraint(SpringLayout.WEST, importBtn, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, importBtn, 330, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.SOUTH, importBtn, 50, SpringLayout.SOUTH, jScrollPaneMonhocTable);
+
+        layout.putConstraint(SpringLayout.WEST, chonlopLabel, 80, SpringLayout.WEST, importBtn);
+        layout.putConstraint(SpringLayout.NORTH, chonlopLabel, 0, SpringLayout.NORTH, importBtn);
+
+        layout.putConstraint(SpringLayout.WEST, chonlopBox, 60, SpringLayout.WEST, chonlopLabel);
+        layout.putConstraint(SpringLayout.NORTH, chonlopBox, 0, SpringLayout.NORTH, chonlopLabel);
 
         this.add(panel);
         this.pack();
         this.setTitle("Thời khóa biểu");
-        this.setSize(800, 420);
+        this.setSize(1000, 700);
         // disable Edit and Delete buttons
         editMonhocBtn.setEnabled(false);
         deleteMonhocBtn.setEnabled(false);
@@ -238,7 +257,27 @@ public class ThoiKhoaBieuView extends JFrame {
         return null;
     }
 
-    public void valueChanged(ListSelectionEvent e) {
+    public void refreshComboBox(){
+        List<String> lophoc = lophocDao.readMaLop();
+        lop = lophoc.toArray(new String[0]);
+        lophoc.add(0, "Tất cả");
+        chonlop = lophoc.toArray(new String[0]);
+        int sortsize = chonlop.length;
+        int index = 0;
+        if (chonlopBox.getItemCount() > 0) {
+            chonlopBox.removeAllItems();
+        }
+        while (index < sortsize){
+            chonlopBox.addItem(chonlop[index]);
+            index++;
+        }
+        sortsize = lop.length;
+        index = 0;
+        lopBox.removeAllItems();
+        while (index < sortsize){
+            lopBox.addItem(lop[index]);
+            index++;
+        }
     }
 
     public void addAddMonhocListener(ActionListener listener) {
@@ -261,6 +300,38 @@ public class ThoiKhoaBieuView extends JFrame {
         importBtn.addActionListener(listener);
     }
 
+    public void addSortListener(ActionListener listener) {
+        chonlopBox.addActionListener(listener);
+    }
+
+    public int getSortIndex(){
+        String item = "";
+        int index = 0;
+        if (chonlopBox.getItemCount() > 0) {
+            item = chonlopBox.getSelectedItem().toString();
+            index = 0;
+            do {
+                if (chonlop[index].equals(item)) {
+                    chonlopBox.setSelectedIndex(index);
+                    break;
+                } else
+                    index++;
+            }
+            while (true);
+        }
+        return index;
+    }
+
+    public void sort(int index){
+        if (index == 0) {
+            List<MonhocEntity> monhoc = monhocDao.readListMonhoc();
+            showListMonHoc(monhoc);
+        }
+        else{
+            List<MonhocEntity> monhoc = monhocDao.readListByLop(chonlop[index]);
+            showListMonHoc(monhoc);
+        }
+    }
 
     public void addListMonhocSelectionListener(ListSelectionListener listener) {
         monhocTable.getSelectionModel().addListSelectionListener(listener);

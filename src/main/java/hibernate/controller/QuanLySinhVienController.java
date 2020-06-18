@@ -1,22 +1,27 @@
 package hibernate.controller;
 
 import hibernate.dao.StudentDao;
+import hibernate.dao.UserDao;
 import hibernate.entity.SinhvienEntity;
+import hibernate.entity.UserEntity;
 import hibernate.utils.CsvUtil;
 import hibernate.view.QuanLySinhVienView;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 public class QuanLySinhVienController {
     private StudentDao studentDao;
+    private UserDao userDao;
     private QuanLySinhVienView studentView;
     private List<SinhvienEntity> listStudents;
 
     public QuanLySinhVienController(){
+        studentDao = new StudentDao();
         listStudents = studentDao.readListStudents();
     }
 
@@ -31,6 +36,12 @@ public class QuanLySinhVienController {
         view.addImportListener(new ImportStudentListener());
         view.addListStudentSelectionListener(new ListStudentSelectionListener());
         view.addSortListener(new SortStudentListener());
+        studentView.showListStudents(listStudents);
+
+    }
+
+        public Container showContentPane(){
+            return studentView.getContentPane();
         }
 
         public void showStudentView() {
@@ -43,6 +54,7 @@ public class QuanLySinhVienController {
             studentView.showListStudents(listStudents);
         }
 
+
         class AddStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 SinhvienEntity student = studentView.getStudentInfo();
@@ -51,6 +63,8 @@ public class QuanLySinhVienController {
                     studentView.showStudent(student);
                     refreshTable();
                     studentView.showMessage("Thêm thành công!");
+                    UserEntity user = new UserEntity(student.getMssv().trim(), student.getMssv().trim());
+                    userDao.add(user);
                 }
             }
         }
@@ -62,6 +76,8 @@ public class QuanLySinhVienController {
                     studentDao.edit(student);
                     studentView.showStudent(student);
                     refreshTable();
+                    UserEntity user = new UserEntity(student.getMssv().trim(), student.getMssv().trim());
+                    userDao.edit(user);
                     studentView.showMessage("Cập nhật thành công!");
                 }
             }
@@ -74,6 +90,8 @@ public class QuanLySinhVienController {
                     studentDao.delete(student);
                     studentView.clearStudentInfo();
                     refreshTable();
+                    UserEntity user = new UserEntity(student.getMssv().trim(), student.getMssv().trim());
+                    userDao.delete(user);
                     studentView.showMessage("Xóa thành công!");
                 }
             }
@@ -88,15 +106,19 @@ public class QuanLySinhVienController {
     class ImportStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             List<SinhvienEntity> sinhvien = CsvUtil.ImportCsv();
+            if (sinhvien == null){
+                return;
+            }
             studentDao.writeToDB(sinhvien);
             listStudents = studentDao.readListStudents();
+            studentView.refreshComboBox();
             studentView.showListStudents(listStudents);
         }
     }
 
     class SortStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            studentView.sort(studentView.getSortIndex(), studentDao);
+            studentView.sort(studentView.getSortIndex());
         }
     }
 

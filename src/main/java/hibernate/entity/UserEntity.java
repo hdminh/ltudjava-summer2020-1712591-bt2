@@ -3,11 +3,14 @@ package hibernate.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user", schema = "qlsv", catalog = "")
+@Table(name = "user", schema = "qlsv")
 public class UserEntity {
     private String username;
     private String password;
-
+    public UserEntity() {
+        this.password = null;
+        this.username = null;
+    }
     public UserEntity(String username, String password) {
         this.password = password;
         this.username = username;

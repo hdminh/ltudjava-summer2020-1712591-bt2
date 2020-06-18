@@ -27,9 +27,6 @@ public class LophocEntity {
         this.malop = malop;
     }
 
-    @OneToMany(targetEntity =SinhvienEntity.class, mappedBy = "lophoc", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    List<SinhvienEntity> sinhvienList;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -10,6 +10,7 @@ import hibernate.view.ThoiKhoaBieuView;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -20,7 +21,12 @@ public class ThoiKhoaBieuController {
     private List<MonhocEntity> listMonhoc;
 
     public ThoiKhoaBieuController(){
+        monhocDao = new MonhocDao();
         listMonhoc = monhocDao.readListMonhoc();
+    }
+
+    public Container showContentPane(){
+        return tkbView.getContentPane();
     }
 
     public ThoiKhoaBieuController(ThoiKhoaBieuView view) {
@@ -32,7 +38,9 @@ public class ThoiKhoaBieuController {
         view.addDeleteMonhocListener(new DeleteStudentListener());
         view.addClearListener(new ClearStudentListener());
         view.addImportListener(new ImportStudentListener());
+        view.addSortListener(new SortStudentListener());
         view.addListMonhocSelectionListener(new ListStudentSelectionListener());
+        tkbView.showListMonHoc(listMonhoc);
     }
 
     public void showTkbView() {
@@ -43,6 +51,15 @@ public class ThoiKhoaBieuController {
     public void refreshTable(){
         listMonhoc = monhocDao.readListMonhoc();
         tkbView.showListMonHoc(listMonhoc);
+    }
+
+    public MonhocEntity findMonById(String id){
+        for (MonhocEntity mh: listMonhoc){
+            if (mh.getMamon().equals("id")){
+                return mh;
+            }
+        }
+        return null;
     }
 
     class AddStudentListener implements ActionListener {
@@ -90,15 +107,18 @@ public class ThoiKhoaBieuController {
     class ImportStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             List<MonhocEntity> monhoc = CsvUtil.ImportMonhoc();
+            if (monhoc == null)
+                return;
             monhocDao.writeToDB(monhoc);
             listMonhoc = monhocDao.readListMonhoc();
+            tkbView.refreshComboBox();
             tkbView.showListMonHoc(listMonhoc);
         }
     }
 
     class SortStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-
+            tkbView.sort(tkbView.getSortIndex());
         }
     }
 
