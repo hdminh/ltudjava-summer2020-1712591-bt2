@@ -2,12 +2,10 @@ package hibernate.view;
 
 import com.toedter.calendar.JDateChooser;
 import hibernate.dao.DanhsachlopDao;
-import hibernate.dao.MonhocDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -190,7 +188,7 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
         String malop = split[0];
         String mamon = split[1];
         if (index == 0) {
-            java.util.List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
+            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
             showListStudents(sinhvien);
         }
         else{

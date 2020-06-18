@@ -107,4 +107,11 @@ public class StudentDao {
             return true;
         }
     }
+
+    public SinhvienEntity getStudentByMssv(String mssv) {
+        Session session = openSession();
+        String query = "SELECT sv FROM SinhvienEntity sv  WHERE sv.mssv = '" + mssv + "'";
+        SinhvienEntity sinhvien = session.createQuery(query, SinhvienEntity.class).getSingleResult();
+        return sinhvien;
+    }
 }

@@ -4,7 +4,6 @@ import hibernate.entity.DanhsachlopEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static hibernate.utils.HibernateUtils.openSession;

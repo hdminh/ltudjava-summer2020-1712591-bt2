@@ -3,7 +3,7 @@ package hibernate.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "danhsachlop", schema = "qlsv", catalog = "")
+@Table(name = "danhsachlop", schema = "qlsv")
 @IdClass(DanhsachlopEntityPK.class)
 public class DanhsachlopEntity {
     private String sinhvien;
@@ -11,7 +11,7 @@ public class DanhsachlopEntity {
     private String hoten;
     private String gioitinh;
     private String cmnd;
-    private String lop;
+    private LophocEntity lop;
 
     @Id
     @Column(name = "sinhvien")
@@ -63,16 +63,6 @@ public class DanhsachlopEntity {
         this.cmnd = cmnd;
     }
 
-    @Basic
-    @Column(name = "lop")
-    public String getLop() {
-        return lop;
-    }
-
-    public void setLop(String lop) {
-        this.lop = lop;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +75,6 @@ public class DanhsachlopEntity {
         if (hoten != null ? !hoten.equals(that.hoten) : that.hoten != null) return false;
         if (gioitinh != null ? !gioitinh.equals(that.gioitinh) : that.gioitinh != null) return false;
         if (cmnd != null ? !cmnd.equals(that.cmnd) : that.cmnd != null) return false;
-        if (lop != null ? !lop.equals(that.lop) : that.lop != null) return false;
 
         return true;
     }
@@ -97,7 +86,16 @@ public class DanhsachlopEntity {
         result = 31 * result + (hoten != null ? hoten.hashCode() : 0);
         result = 31 * result + (gioitinh != null ? gioitinh.hashCode() : 0);
         result = 31 * result + (cmnd != null ? cmnd.hashCode() : 0);
-        result = 31 * result + (lop != null ? lop.hashCode() : 0);
         return result;
+    }
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "lop", referencedColumnName = "malop")
+    public LophocEntity getLop() {
+        return lop;
+    }
+
+    public void setLop(LophocEntity lop) {
+        this.lop = lop;
     }
 }

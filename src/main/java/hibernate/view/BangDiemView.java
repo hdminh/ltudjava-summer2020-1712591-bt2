@@ -1,13 +1,9 @@
 package hibernate.view;
 
-import hibernate.controller.QuanLySinhVienController;
-import hibernate.controller.ThoiKhoaBieuController;
 import hibernate.dao.DanhsachlopDao;
 import hibernate.dao.MonhocDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
-import hibernate.entity.MonhocEntity;
-import hibernate.entity.SinhvienEntity;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -16,7 +12,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BangDiemView extends JFrame implements ActionListener {
@@ -222,7 +217,7 @@ public class BangDiemView extends JFrame implements ActionListener {
         }
         while (true);
         index = 0;
-        String lopStr = student.getLop().trim();
+        String lopStr = student.getLop().getMalop().trim();
         do {
             if (lop[index].equals(lopStr)){
                 lopBox.setSelectedIndex(index);

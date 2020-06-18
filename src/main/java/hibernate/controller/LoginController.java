@@ -54,7 +54,7 @@ public class LoginController {
                 qlsv.showStudentView();
             }
             else{
-                loginView.showMessage("username hoặc password không đúng.");
+                loginView.showMessage("Username hoặc Password không đúng.");
             }
         }
     }

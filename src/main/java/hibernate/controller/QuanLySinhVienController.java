@@ -40,6 +40,10 @@ public class QuanLySinhVienController {
 
     }
 
+    public SinhvienEntity findSinhVienByMssv(String mssv){
+        return studentDao.getStudentByMssv(mssv);
+    }
+
         public Container showContentPane(){
             return studentView.getContentPane();
         }

@@ -1,9 +1,6 @@
 package hibernate;
 
-import hibernate.controller.DanhSachLopController;
 import hibernate.controller.LoginController;
-import hibernate.dao.UserDao;
-import hibernate.entity.UserEntity;
 import hibernate.view.*;
 
 

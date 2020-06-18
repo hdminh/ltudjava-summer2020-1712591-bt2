@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "lophoc", schema = "qlsv", catalog = "")
+@Table(name = "lophoc", schema = "qlsv")
 public class LophocEntity {
     @Id
     private String malop;
@@ -18,6 +18,7 @@ public class LophocEntity {
     }
 
 
+    @Id
     @Column(name = "malop")
     public String getMalop() {
         return malop;

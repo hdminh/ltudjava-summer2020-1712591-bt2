@@ -1,11 +1,11 @@
 package hibernate.view;
 
 import hibernate.controller.QuanLySinhVienController;
-import hibernate.controller.ThoiKhoaBieuController;
 import hibernate.dao.DanhsachlopDao;
 import hibernate.dao.MonhocDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
+import hibernate.entity.LophocEntity;
 import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
 
@@ -23,6 +23,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     StudentDao studentDao = new StudentDao();
     MonhocDao monhocDao = new MonhocDao();
     DanhsachlopDao svhocmonDao = new DanhsachlopDao();
+    QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
     String [] chonlop;
     String [] mssv;
@@ -67,7 +68,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         for (MonhocEntity mh : monhoc){
             String mamon = mh.getMamon();
             String malop = mh.getLophoc().getMalop();
-            monhocList.add(malop + " - " + mamon);
+            monhocList.add(malop + "-" + mamon);
         }
         List<SinhvienEntity> sinhvien = studentDao.readListStudents();
         List<String> mssvList = new ArrayList<String>();
@@ -100,6 +101,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
 
         panel.add(svLabel);
         panel.add(lopLabel);
+        panel.add(chonlopLabel);
 
         panel.add(svBox);
         panel.add(lopBox);
@@ -121,6 +123,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
 
         layout.putConstraint(SpringLayout.WEST, addStudentBtn, 15, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, addStudentBtn, 240, SpringLayout.NORTH, panel);
+        
         layout.putConstraint(SpringLayout.WEST, deleteStudentBtn, 60, SpringLayout.WEST, addStudentBtn);
 
         layout.putConstraint(SpringLayout.NORTH, clearBtn, 240, SpringLayout.NORTH, panel);
@@ -129,7 +132,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         layout.putConstraint(SpringLayout.NORTH, deleteStudentBtn, 240, SpringLayout.NORTH, panel);
 
         layout.putConstraint(SpringLayout.WEST, chonlopLabel, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.SOUTH, chonlopLabel, 330, SpringLayout.SOUTH, jScrollPaneStudentTable);
+        layout.putConstraint(SpringLayout.SOUTH, chonlopLabel, 50, SpringLayout.SOUTH, jScrollPaneStudentTable);
 
         layout.putConstraint(SpringLayout.WEST, chonlopBox, 60, SpringLayout.WEST, chonlopLabel);
         layout.putConstraint(SpringLayout.NORTH, chonlopBox, 0, SpringLayout.NORTH, chonlopLabel);
@@ -156,35 +159,10 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             students[i][2] = list.get(i).getHoten();
             students[i][3] = list.get(i).getCmnd();
             students[i][4] = list.get(i).getGioitinh();
-            String tenlop = list.get(i).getLop()+ "-" + list.get(i).getMonhoc();
+            String tenlop = list.get(i).getLop().getMalop() + "-" + list.get(i).getMonhoc();
             students[i][5] = tenlop;
         }
         studentTable.setModel(new DefaultTableModel(students, columnNames));
-    }
-
-    public void showStudent(DanhsachlopEntity student) {
-        int index = 0;
-        String sinhvien = student.getSinhvien().trim();
-        do {
-            if (mssv[index].equals(sinhvien)){
-                lopBox.setSelectedIndex(index);
-                break;
-            }else
-                index++;
-        }
-        while (true);
-        index = 0;
-        String lopStr = student.getLop().trim();
-        do {
-            if (lop[index].equals(lopStr)){
-                lopBox.setSelectedIndex(index);
-                break;
-            }else
-                index++;
-        }
-        while (true);
-        deleteStudentBtn.setEnabled(true);
-        addStudentBtn.setEnabled(false);
     }
 
     public void fillStudentFromSelectedRow() {
@@ -192,12 +170,11 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         if (row >= 0) {
 
             int index = 0;
-            int indexmssv = 0;
             String sinhvien = studentTable.getModel().getValueAt(row, 1).toString().trim();
             do {
-                String [] mssvStr = mssv[indexmssv].split("-");
+                String [] mssvStr = mssv[index].split("-");
                 if (mssvStr[0].trim().equals(sinhvien)){
-                    lopBox.setSelectedIndex(index);
+                    svBox.setSelectedIndex(index);
                     break;
                 }else{
                     index++;
@@ -206,7 +183,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             while (true);
 
             index = 0;
-            int indexlop = 0;
             String lopStr = studentTable.getModel().getValueAt(row, 5).toString().trim();
             do {
 
@@ -234,14 +210,45 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         try {
             DanhsachlopEntity student = new DanhsachlopEntity();
             String mssv = svBox.getSelectedItem().toString();
+            String [] splitMssv = mssv.split("-");
+            SinhvienEntity sinhvienEntity = qlsvController.findSinhVienByMssv(splitMssv[0]);
+            System.out.println(sinhvienEntity.getCmnd());
             String monhoc = lopBox.getSelectedItem().toString();
-            student.setSinhvien(mssv);
-            student.setMonhoc(monhoc);
+            String [] splitMon = monhoc.split("-");
+            LophocEntity lophocEntity = new LophocEntity(splitMon[0]);
+            student.setSinhvien(sinhvienEntity.getMssv());
+            student.setHoten(sinhvienEntity.getHoten());
+            student.setCmnd(sinhvienEntity.getCmnd());
+            student.setGioitinh(sinhvienEntity.getGioitinh());
+            student.setMonhoc(splitMon[1]);
+            student.setLop(lophocEntity);
             return student;
         } catch (Exception e) {
             showMessage(e.getMessage());
         }
         return null;
+    }
+
+    public DanhsachlopEntity getStudentInfoFromSelectedRow(){
+        int row = studentTable.getSelectedRow();
+        try {
+            DanhsachlopEntity student = new DanhsachlopEntity();
+
+            student.setSinhvien(studentTable.getModel().getValueAt(row, 1).toString());
+            student.setHoten(studentTable.getModel().getValueAt(row, 2).toString());
+            student.setCmnd(studentTable.getModel().getValueAt(row, 3).toString());
+            student.setGioitinh(studentTable.getModel().getValueAt(row, 4).toString());
+            String monhoc = studentTable.getModel().getValueAt(row, 5).toString();
+            String [] splitMon = monhoc.split("-");
+            LophocEntity lophocEntity = new LophocEntity(splitMon[0]);
+            student.setMonhoc(splitMon[1]);
+            student.setLop(lophocEntity);
+            return student;
+        } catch (Exception e) {
+            showMessage(e.getMessage());
+        }
+        return null;
+
     }
     public void valueChanged(ListSelectionEvent e) {
     }
@@ -279,14 +286,15 @@ public class DanhSachLopView extends JFrame implements ActionListener {
 
     public void sort(int index, StudentDao studentDao){
 
-        String[] split = chonlop[index].split("-");
-        String malop = split[0];
-        String mamon = split[1];
+
         if (index == 0) {
             List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
             showListStudents(sinhvien);
         }
         else{
+            String[] split = chonlop[index].split("-");
+            String malop = split[0];
+            String mamon = split[1];
             List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
             showListStudents(sinhvien);
         }

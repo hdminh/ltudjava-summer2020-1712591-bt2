@@ -13,7 +13,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class DanhSachLopController {
@@ -34,13 +33,18 @@ public class DanhSachLopController {
         monhocDao = new MonhocDao();
         svhocmonDao = new DanhsachlopDao();
         this.studentView = view;
-        readListSinhvienTheoMon();
+        if (svhocmonDao.readListStudents() == null) {
+            readListSinhvienTheoMon();
+        }
+        svhocmon = svhocmonDao.readListStudents();
         view.addAddStudentListener(new DanhSachLopController.AddStudentListener());
         view.addDeleteStudentListener(new DanhSachLopController.DeleteStudentListener());
         view.addClearListener(new DanhSachLopController.ClearStudentListener());
         view.addListStudentSelectionListener(new DanhSachLopController.ListStudentSelectionListener());
         view.addSortListener(new DanhSachLopController.SortStudentListener());
-        studentView.showListStudents(svhocmon);
+        if (svhocmonDao.readListStudents() != null) {
+            studentView.showListStudents(svhocmon);
+        }
     }
 
     public Container showContentPane(){
@@ -48,17 +52,23 @@ public class DanhSachLopController {
     }
 
     private void readListSinhvienTheoMon(){
-        listStudents = studentDao.readListStudents();
-        listMonhoc = monhocDao.readListMonhoc();
-        DanhsachlopEntity temp = new DanhsachlopEntity();
-        ;
-        for (SinhvienEntity sv: listStudents){
-            for (MonhocEntity mh: listMonhoc){
-                if(sv.getLop().getMalop().equals(mh.getLophoc().getMalop())){
-                    temp.setSinhvien(sv.getMssv());
-                    temp.setMonhoc(mh.getMamon());
-                    svhocmonDao.add(temp);
-                    temp = new DanhsachlopEntity();
+        if (svhocmonDao.readListStudents() == null) {
+            listStudents = studentDao.readListStudents();
+            listMonhoc = monhocDao.readListMonhoc();
+            DanhsachlopEntity temp = new DanhsachlopEntity();
+            ;
+            for (SinhvienEntity sv : listStudents) {
+                for (MonhocEntity mh : listMonhoc) {
+                    if (sv.getLop().getMalop().equals(mh.getLophoc().getMalop())) {
+                        temp.setSinhvien(sv.getMssv());
+                        temp.setHoten(sv.getHoten());
+                        temp.setCmnd(sv.getCmnd());
+                        temp.setGioitinh(sv.getGioitinh());
+                        temp.setLop(sv.getLop());
+                        temp.setMonhoc(mh.getMamon());
+                        svhocmonDao.add(temp);
+                        temp = new DanhsachlopEntity();
+                    }
                 }
             }
         }
@@ -81,7 +91,6 @@ public class DanhSachLopController {
             DanhsachlopEntity student = studentView.getStudentInfo();
             if (student != null) {
                 svhocmonDao.add(student);
-                studentView.showStudent(student);
                 refreshTable();
                 studentView.showMessage("Đã thêm vào lớp học!");
             }
@@ -90,7 +99,7 @@ public class DanhSachLopController {
 
     class DeleteStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            DanhsachlopEntity student = studentView.getStudentInfo();
+            DanhsachlopEntity student = studentView.getStudentInfoFromSelectedRow();
             if (student != null) {
                 svhocmonDao.delete(student);
                 studentView.clearStudentInfo();
