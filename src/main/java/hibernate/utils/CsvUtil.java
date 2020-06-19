@@ -1,6 +1,8 @@
 package hibernate.utils;
 
+import hibernate.controller.QuanLySinhVienController;
 import hibernate.dao.LophocDao;
+import hibernate.entity.BangdiemEntity;
 import hibernate.entity.LophocEntity;
 import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvUtil {
+    static QuanLySinhVienController quanLySinhVienController = new QuanLySinhVienController();
     private static JFileChooser fc = new JFileChooser();
 
 //    public void ExportCsv(List<SinhvienEntity> studentList){
@@ -76,7 +79,7 @@ public class CsvUtil {
             List<LophocEntity> lophoc = lophocDao.readListLopHoc();
             LophocEntity lophocEntity = new LophocEntity(lop);
             if (!lophoc.contains(lophocEntity))
-                lophocDao.add(lop);
+                lophocDao.add(lophocEntity);
             while ((line = br.readLine()) != null){
                 String[] list = line.split(",");
                 if (list.length > 0){
@@ -117,7 +120,7 @@ public class CsvUtil {
             List<LophocEntity> lophoc = lophocDao.readListLopHoc();
             LophocEntity lophocEntity = new LophocEntity(lop);
             if (!lophoc.contains(lophocEntity))
-                lophocDao.add(lop);
+                lophocDao.add(lophocEntity);
             while ((line = br.readLine()) != null){
                 String[] list = line.split(",");
                 if (list.length > 0){
@@ -133,5 +136,54 @@ public class CsvUtil {
             e.printStackTrace();
         }
         return monhocList;
+    }
+
+    public static List<BangdiemEntity> ImportBangdiem(){
+        BufferedReader br;
+        List<BangdiemEntity> bangdiemList = new ArrayList<BangdiemEntity>();
+        String line;
+        FileReader fr;
+        fc.setDialogTitle("Chọn file để Import");
+        File file = null;
+        int result = fc.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION){
+            file = fc.getSelectedFile();
+        }
+        if (file == null){
+            return null;
+        }
+        try {
+            fr = new FileReader(file.getAbsolutePath());
+            br = new BufferedReader(fr);
+            String lop = br.readLine();
+            String [] splitLop = lop.split("-");
+            LophocDao lophocDao = new LophocDao();
+            List<LophocEntity> lophoc = lophocDao.readListLopHoc();
+            LophocEntity lophocEntity = new LophocEntity(splitLop[0]);
+            if (!lophoc.contains(lophocEntity))
+                lophocDao.add(lophocEntity);
+            while ((line = br.readLine()) != null){
+                String[] list = line.split(",");
+                if (list.length > 0){
+                    BangdiemEntity bangdiemEntity = new BangdiemEntity();
+                    bangdiemEntity.setSinhvien(list[0]);
+                    bangdiemEntity.setHoten(quanLySinhVienController.findSinhVienByMssv(list[0]).getHoten());
+                    bangdiemEntity.setMonhoc(splitLop[1]);
+                    bangdiemEntity.setDiemgk(Double.parseDouble(list[1]));
+                    bangdiemEntity.setDiemck(Double.parseDouble(list[2]));
+                    bangdiemEntity.setDiemkhac(Double.parseDouble(list[3]));
+                    bangdiemEntity.setDiemtong(Double.parseDouble(list[4]));
+                    if (Double.parseDouble(list[4]) >= 5)
+                        bangdiemEntity.setDau((byte) 1);
+                    else
+                        bangdiemEntity.setDau((byte) 0);
+                    bangdiemEntity.setLophoc(lophocEntity);
+                    bangdiemList.add(bangdiemEntity);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bangdiemList;
     }
 }

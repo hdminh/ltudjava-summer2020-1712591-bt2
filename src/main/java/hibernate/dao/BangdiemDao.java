@@ -1,26 +1,23 @@
 package hibernate.dao;
 
 import hibernate.entity.BangdiemEntity;
-import hibernate.entity.SinhvienEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static hibernate.utils.HibernateUtils.*;
+import static hibernate.utils.HibernateUtils.openSession;
 
-public class StudentDao {
-
-    public StudentDao(){
+public class BangdiemDao {
+    public BangdiemDao(){
     }
 
-    public void writeToDB(List<SinhvienEntity> students) {
+    public void addList(List<BangdiemEntity> students) {
         Session session = openSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            for (SinhvienEntity sv : students) {
+            for (BangdiemEntity sv : students) {
                 session.save(sv);
             }
             tx.commit();
@@ -34,30 +31,14 @@ public class StudentDao {
         }
     }
 
-    public List<SinhvienEntity> readListStudents() {
+    public List<BangdiemEntity> readListStudents() {
         Session session = openSession();
-        String query = "FROM SinhvienEntity";
-        List<SinhvienEntity> sinhvien = session.createQuery(query, SinhvienEntity.class).list();
+        String query = "FROM BangdiemEntity";
+        List<BangdiemEntity> sinhvien = session.createQuery(query, BangdiemEntity.class).list();
         return sinhvien;
     }
 
-    public List<String> readListMssv(){
-        List<String> mssv = new ArrayList<String>();
-        List<SinhvienEntity> sinhvien = readListStudents();
-        for (SinhvienEntity sv: sinhvien){
-            mssv.add(sv.getMssv());
-        }
-        return mssv;
-    }
-
-    public List<SinhvienEntity> readListByLop(String malop){
-        Session session = openSession();
-        String query = "SELECT sv FROM SinhvienEntity sv  WHERE sv.lophoc = '" + malop + "'";
-        List<SinhvienEntity> sinhvien = session.createQuery(query, SinhvienEntity.class).list();
-        return sinhvien;
-    }
-
-    public void add(SinhvienEntity student) {
+    public void add(BangdiemEntity student) {
         Session session = openSession();
         Transaction tx = null;
         try{
@@ -74,7 +55,7 @@ public class StudentDao {
         }
     }
 
-    public void edit(SinhvienEntity student) {
+    public void update(BangdiemEntity student) {
         Session session = openSession();
         Transaction tx = null;
         try{
@@ -91,7 +72,7 @@ public class StudentDao {
         }
     }
 
-    public boolean delete(SinhvienEntity student) {
+    public boolean delete(BangdiemEntity student) {
         Session session = openSession();
         Transaction tx = null;
         try{
@@ -109,10 +90,10 @@ public class StudentDao {
         }
     }
 
-    public SinhvienEntity getStudentByMssv(String mssv) {
+    public List<BangdiemEntity> readListByMon(String mon) {
         Session session = openSession();
-        String query = "SELECT sv FROM SinhvienEntity sv  WHERE sv.mssv = '" + mssv + "'";
-        SinhvienEntity sinhvien = session.createQuery(query, SinhvienEntity.class).getSingleResult();
+        String query = "SELECT sv FROM BangdiemEntity sv WHERE sv.monhoc = '" + mon + "'";
+        List<BangdiemEntity> sinhvien = session.createQuery(query, BangdiemEntity.class).list();
         return sinhvien;
     }
 }

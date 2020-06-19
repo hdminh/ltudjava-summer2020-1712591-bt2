@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DanhSachLopController {
@@ -33,7 +34,7 @@ public class DanhSachLopController {
         monhocDao = new MonhocDao();
         svhocmonDao = new DanhsachlopDao();
         this.studentView = view;
-        if (svhocmonDao.readListStudents() == null) {
+        if (svhocmonDao.readListStudents().size() == 0) {
             readListSinhvienTheoMon();
         }
         svhocmon = svhocmonDao.readListStudents();
@@ -52,25 +53,26 @@ public class DanhSachLopController {
     }
 
     private void readListSinhvienTheoMon(){
-        if (svhocmonDao.readListStudents() == null) {
+        if (svhocmonDao.readListStudents().size() == 0) {
             listStudents = studentDao.readListStudents();
             listMonhoc = monhocDao.readListMonhoc();
-            DanhsachlopEntity temp = new DanhsachlopEntity();
+            List<DanhsachlopEntity> list = new ArrayList<DanhsachlopEntity>();
             ;
             for (SinhvienEntity sv : listStudents) {
                 for (MonhocEntity mh : listMonhoc) {
                     if (sv.getLop().getMalop().equals(mh.getLophoc().getMalop())) {
+                        DanhsachlopEntity temp = new DanhsachlopEntity();
                         temp.setSinhvien(sv.getMssv());
                         temp.setHoten(sv.getHoten());
                         temp.setCmnd(sv.getCmnd());
                         temp.setGioitinh(sv.getGioitinh());
                         temp.setLop(sv.getLop());
                         temp.setMonhoc(mh.getMamon());
-                        svhocmonDao.add(temp);
-                        temp = new DanhsachlopEntity();
+                        list.add(temp);
                     }
                 }
             }
+            svhocmonDao.addList(list);
         }
         svhocmon = svhocmonDao.readListStudents();
     }
@@ -82,6 +84,12 @@ public class DanhSachLopController {
     }
 
     public void refreshTable(){
+        readListSinhvienTheoMon();
+        studentView.showListStudents(svhocmon);
+    }
+
+    public void onClick() {
+        studentView.refreshComboBox();
         readListSinhvienTheoMon();
         studentView.showListStudents(svhocmon);
     }

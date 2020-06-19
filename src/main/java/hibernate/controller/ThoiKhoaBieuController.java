@@ -62,6 +62,11 @@ public class ThoiKhoaBieuController {
         return null;
     }
 
+    public void onClick() {
+        tkbView.refreshComboBox();
+    }
+
+
     class AddStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             MonhocEntity monhoc = tkbView.getMonhocInfo();

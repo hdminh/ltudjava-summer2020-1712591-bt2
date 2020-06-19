@@ -3,17 +3,17 @@ package hibernate.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "bangdiem", schema = "qlsv", catalog = "")
+@Table(name = "bangdiem", schema = "qlsv")
 @IdClass(BangdiemEntityPK.class)
 public class BangdiemEntity {
     private String sinhvien;
     private String hoten;
-    private String lophoc;
     private String monhoc;
     private Double diemgk;
     private Double diemck;
     private Double diemkhac;
     private Double diemtong;
+    private LophocEntity lophoc;
     private Byte dau;
 
     @Id
@@ -34,16 +34,6 @@ public class BangdiemEntity {
 
     public void setHoten(String hoten) {
         this.hoten = hoten;
-    }
-
-    @Basic
-    @Column(name = "lophoc")
-    public String getLophoc() {
-        return lophoc;
-    }
-
-    public void setLophoc(String lophoc) {
-        this.lophoc = lophoc;
     }
 
     @Id
@@ -115,7 +105,6 @@ public class BangdiemEntity {
 
         if (sinhvien != null ? !sinhvien.equals(that.sinhvien) : that.sinhvien != null) return false;
         if (hoten != null ? !hoten.equals(that.hoten) : that.hoten != null) return false;
-        if (lophoc != null ? !lophoc.equals(that.lophoc) : that.lophoc != null) return false;
         if (monhoc != null ? !monhoc.equals(that.monhoc) : that.monhoc != null) return false;
         if (diemgk != null ? !diemgk.equals(that.diemgk) : that.diemgk != null) return false;
         if (diemck != null ? !diemck.equals(that.diemck) : that.diemck != null) return false;
@@ -130,7 +119,6 @@ public class BangdiemEntity {
     public int hashCode() {
         int result = sinhvien != null ? sinhvien.hashCode() : 0;
         result = 31 * result + (hoten != null ? hoten.hashCode() : 0);
-        result = 31 * result + (lophoc != null ? lophoc.hashCode() : 0);
         result = 31 * result + (monhoc != null ? monhoc.hashCode() : 0);
         result = 31 * result + (diemgk != null ? diemgk.hashCode() : 0);
         result = 31 * result + (diemck != null ? diemck.hashCode() : 0);
@@ -138,5 +126,15 @@ public class BangdiemEntity {
         result = 31 * result + (diemtong != null ? diemtong.hashCode() : 0);
         result = 31 * result + (dau != null ? dau.hashCode() : 0);
         return result;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lophoc", referencedColumnName = "malop")
+    public LophocEntity getLophoc() {
+        return lophoc;
+    }
+
+    public void setLophoc(LophocEntity lophoc) {
+        this.lophoc = lophoc;
     }
 }

@@ -39,8 +39,7 @@ public class LophocDao {
         return lophoc;
     }
 
-    public void add(String malop){
-        LophocEntity lophocEntity = new LophocEntity(malop);
+    public void add(LophocEntity lophocEntity){
         Session session = openSession();
         Transaction tx = null;
         try{

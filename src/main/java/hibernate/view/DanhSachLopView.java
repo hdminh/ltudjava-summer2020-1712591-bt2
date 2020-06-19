@@ -2,6 +2,7 @@ package hibernate.view;
 
 import hibernate.controller.QuanLySinhVienController;
 import hibernate.dao.DanhsachlopDao;
+import hibernate.dao.LophocDao;
 import hibernate.dao.MonhocDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
@@ -10,7 +11,6 @@ import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -22,6 +22,7 @@ import java.util.List;
 public class DanhSachLopView extends JFrame implements ActionListener {
     StudentDao studentDao = new StudentDao();
     MonhocDao monhocDao = new MonhocDao();
+    LophocDao lophocDao = new LophocDao();
     DanhsachlopDao svhocmonDao = new DanhsachlopDao();
     QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
@@ -140,7 +141,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         this.add(panel);
         this.pack();
         this.setTitle("Lớp theo môn học");
-        this.setSize(800, 420);
         deleteStudentBtn.setEnabled(false);
         addStudentBtn.setEnabled(true);
     }
@@ -250,8 +250,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         return null;
 
     }
-    public void valueChanged(ListSelectionEvent e) {
-    }
 
     public void addAddStudentListener(ActionListener listener) {
         addStudentBtn.addActionListener(listener);
@@ -271,21 +269,24 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     }
 
     public int getSortIndex(){
-        String item = chonlopBox.getSelectedItem().toString();
+
         int index = 0;
-        do {
-            if (chonlop[index].equals(item)){
-                chonlopBox.setSelectedIndex(index);
-                break;
-            }else
-                index++;
+        if (chonlopBox.getItemCount() > 0) {
+            String item = chonlopBox.getSelectedItem().toString();
+            do {
+                if (chonlop[index].equals(item)) {
+                    chonlopBox.setSelectedIndex(index);
+                    break;
+                } else
+                    index++;
+            }
+            while (true);
         }
-        while (true);
+
         return index;
     }
 
     public void sort(int index, StudentDao studentDao){
-
 
         if (index == 0) {
             List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
@@ -297,6 +298,51 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             String mamon = split[1];
             List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
             showListStudents(sinhvien);
+        }
+    }
+
+    public void refreshComboBox(){
+        List<MonhocEntity> monhoc = monhocDao.readListMonhoc();
+        List<String> monhocList = new ArrayList<String>();
+        for (MonhocEntity mh : monhoc){
+            String mamon = mh.getMamon();
+            String malop = mh.getLophoc().getMalop();
+            monhocList.add(malop + "-" + mamon);
+        }
+        List<SinhvienEntity> sinhvien = studentDao.readListStudents();
+        List<String> mssvList = new ArrayList<String>();
+        for (SinhvienEntity sv: sinhvien){
+            String mssv = sv.getMssv();
+            String ten = sv.getHoten();
+            mssvList.add(mssv + "-" + ten);
+        }
+        lop = monhocList.toArray(new String[0]);
+        monhocList.add(0, "Tất cả");
+        chonlop = monhocList.toArray(new String[0]);
+        mssv = mssvList.toArray(new String[0]);
+        int sortsize = chonlop.length;
+        int index = 0;
+        if (chonlopBox.getItemCount() > 0) {
+            chonlopBox.removeAllItems();
+        }
+        while (index < sortsize){
+            chonlopBox.addItem(chonlop[index]);
+            index++;
+        }
+        sortsize = lop.length;
+        index = 0;
+        lopBox.removeAllItems();
+        while (index < sortsize){
+            lopBox.addItem(lop[index]);
+            index++;
+        }
+
+        sortsize = mssv.length;
+        index = 0;
+        svBox.removeAllItems();
+        while (index < sortsize){
+            svBox.addItem(mssv[index]);
+            index++;
         }
     }
 

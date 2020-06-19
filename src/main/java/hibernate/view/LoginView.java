@@ -56,6 +56,7 @@ public class LoginView extends JFrame implements ActionListener {
         layout.putConstraint(SpringLayout.NORTH, loginBtn, 130, SpringLayout.NORTH, panel);
 
         this.add(panel);
+        this.getRootPane().setDefaultButton(loginBtn);
         this.pack();
         this.setTitle("Login");
         this.setSize(400, 300);

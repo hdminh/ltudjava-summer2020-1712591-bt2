@@ -1,11 +1,14 @@
 package hibernate.view;
 
+import hibernate.controller.BangdiemController;
 import hibernate.controller.DanhSachLopController;
 import hibernate.controller.QuanLySinhVienController;
 import hibernate.controller.ThoiKhoaBieuController;
 import hibernate.dao.UserDao;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +23,7 @@ public class MainView extends JFrame implements ActionListener {
     QuanLySinhVienController qlsvController;
     ThoiKhoaBieuController tkbController;
     DanhSachLopController dslopController;
-    UserDao userDao;
+    BangdiemController bdController;
     JTabbedPane pane;
 
     public MainView(){
@@ -38,13 +41,36 @@ public class MainView extends JFrame implements ActionListener {
         qlsvController = new QuanLySinhVienController(qlsvView);
         tkbController = new ThoiKhoaBieuController(tkbView);
         dslopController = new DanhSachLopController(dslopView);
+        bdController = new BangdiemController(bdView);
 
         pane.addTab("Thông tin sinh viên", qlsvController.showContentPane());
         pane.addTab("Thời khóa biểu",tkbController.showContentPane());
         pane.addTab("Danh sách lớp", dslopController.showContentPane());
-        pane.addTab("Bảng điểm", bdView.getContentPane());
-        pane.addTab("Lịch thi", lichView.getContentPane());
-        this.add(pane);
+        pane.addTab("Bảng điểm", bdController.showContentPane());
+        pane.addTab("Lịch phúc khảo", lichView.getContentPane());
+        ChangeListener changeListener = new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+                int index = sourceTabbedPane.getSelectedIndex();
+                switch (index){
+                    case 0:
+                        qlsvController.onClick();
+                        break;
+                    case 1:
+                        tkbController.onClick();
+                        break;
+                    case 2:
+                        dslopController.onClick();
+                        break;
+                    case 3:
+                        bdController.onClick();
+                        break;
+
+                }
+            }
+        };
+        pane.addChangeListener(changeListener);
+        this.add(pane, BorderLayout.CENTER);
         this.pack();
         this.setTitle("Portal HCMUS");
         this.setSize(1000, 700);

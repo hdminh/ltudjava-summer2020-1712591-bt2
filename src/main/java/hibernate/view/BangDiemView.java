@@ -1,30 +1,36 @@
 package hibernate.view;
 
-import hibernate.dao.DanhsachlopDao;
+import hibernate.controller.QuanLySinhVienController;
+import hibernate.dao.BangdiemDao;
+import hibernate.dao.LophocDao;
 import hibernate.dao.MonhocDao;
 import hibernate.dao.StudentDao;
-import hibernate.entity.DanhsachlopEntity;
+import hibernate.entity.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BangDiemView extends JFrame implements ActionListener {
     StudentDao studentDao = new StudentDao();
     MonhocDao monhocDao = new MonhocDao();
-    DanhsachlopDao svhocmonDao = new DanhsachlopDao();
+    BangdiemDao bangdiemDao = new BangdiemDao();
+    LophocDao lophocDao = new LophocDao();
+    QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
     String [] chonlop;
     String [] mssv;
 
     private static final long serialVersionUID = 1L;
     private JButton addStudentBtn;
+    private JButton editStudentBtn;
     private JButton deleteStudentBtn;
+    private JButton importBtn;
     private JButton clearBtn;
     private JScrollPane jScrollPaneStudentTable;
     private JTable studentTable;
@@ -36,6 +42,8 @@ public class BangDiemView extends JFrame implements ActionListener {
     private JLabel ckLabel;
     private JLabel khacLabel;
     private JLabel tongLabel;
+    private JLabel dauLabel;
+    private JLabel rotLabel;
 
     private JTextField gkField;
     private JTextField ckField;
@@ -58,6 +66,8 @@ public class BangDiemView extends JFrame implements ActionListener {
         // khởi tạo các phím chức năng
         addStudentBtn = new JButton("Thêm");
         deleteStudentBtn = new JButton("Xóa");
+        editStudentBtn = new JButton("Sửa");
+        importBtn = new JButton("Import");
         clearBtn = new JButton("Nhập lại");
         jScrollPaneStudentTable = new JScrollPane();
         studentTable = new JTable();
@@ -69,35 +79,38 @@ public class BangDiemView extends JFrame implements ActionListener {
         khacLabel = new JLabel("Điểm khác");
         tongLabel = new JLabel("Điểm tổng");
         chonlopLabel = new JLabel("Chọn lớp");
-//        List<MonhocEntity> monhoc = monhocDao.readListMonhoc();
-//        List<String> monhocList = new ArrayList<String>();
-//        for (MonhocEntity mh : monhoc){
-//            String mamon = mh.getMamon();
-//            String malop = mh.getLophoc().getMalop();
-//            monhocList.add(malop + "-" + mamon);
-//        }
-//        List<SinhvienEntity> sinhvien = studentDao.readListStudents();
-//        List<String> mssvList = new ArrayList<String>();
-//        for (SinhvienEntity sv: sinhvien){
-//            String mssv = sv.getMssv();
-//            String ten = sv.getHoten();
-//            mssvList.add(mssv + "-" + ten);
-//        }
-//        lop = monhocList.toArray(new String[0]);
-//        monhocList.add(0, "Tất cả");
-//        chonlop = monhocList.toArray(new String[0]);
-       // mssv = mssvList.toArray(new String[0]);
+        dauLabel = new JLabel("Đậu: 0 (0%)");
+        rotLabel = new JLabel("Rớt: 0 (0%)");
+        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
+        List<String> monhocList = new ArrayList<String>();
+        List<String> mssvList = new ArrayList<String>();
+
+        for (BangdiemEntity bd : bangdiem){
+            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
+            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
+            if (!monhocList.contains(monhoc)) {
+                monhocList.add(monhoc);
+            }
+            if (!mssvList.contains(sinhvien)) {
+                mssvList.add(sinhvien);
+            }
+        }
+
+        lop = monhocList.toArray(new String[0]);
+        monhocList.add(0, "Tất cả");
+        chonlop = monhocList.toArray(new String[0]);
+        mssv = mssvList.toArray(new String[0]);
         gkField = new JTextField(15);
         ckField = new JTextField(15);
         khacField = new JTextField(15);
         tongField = new JTextField(15);
-//        svBox = new JComboBox(mssv);
-//        lopBox = new JComboBox(lop);
-//        chonlopBox = new JComboBox(chonlop);
+        svBox = new JComboBox(mssv);
+        lopBox = new JComboBox(lop);
+        chonlopBox = new JComboBox(chonlop);
 
         studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
         jScrollPaneStudentTable.setViewportView(studentTable);
-        jScrollPaneStudentTable.setPreferredSize(new Dimension(600, 400));
+        jScrollPaneStudentTable.setPreferredSize(new Dimension(650, 500));
 
         SpringLayout layout = new SpringLayout();
         JPanel panel = new JPanel();
@@ -107,6 +120,8 @@ public class BangDiemView extends JFrame implements ActionListener {
 
         panel.add(addStudentBtn);
         panel.add(deleteStudentBtn);
+        panel.add(editStudentBtn);
+        panel.add(importBtn);
         panel.add(clearBtn);
 
         panel.add(svLabel);
@@ -115,15 +130,19 @@ public class BangDiemView extends JFrame implements ActionListener {
         panel.add(ckLabel);
         panel.add(khacLabel);
         panel.add(tongLabel);
+        panel.add(chonlopLabel);
+
+        panel.add(dauLabel);
+        panel.add(rotLabel);
 
         panel.add(gkField);
         panel.add(ckField);
         panel.add(khacField);
         panel.add(tongField);
 
-//        panel.add(svBox);
-//        panel.add(lopBox);
-//        panel.add(chonlopBox);
+        panel.add(svBox);
+        panel.add(lopBox);
+        panel.add(chonlopBox);
 
         layout.putConstraint(SpringLayout.WEST, svLabel, 10, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, svLabel, 10, SpringLayout.NORTH, panel);
@@ -151,30 +170,42 @@ public class BangDiemView extends JFrame implements ActionListener {
         layout.putConstraint(SpringLayout.NORTH, tongField, 0, SpringLayout.NORTH, tongLabel);
 
 
-//        layout.putConstraint(SpringLayout.WEST, lopBox, 90, SpringLayout.WEST, lopLabel);
-//        layout.putConstraint(SpringLayout.NORTH, lopBox, 0, SpringLayout.NORTH, lopLabel);
-//
-//        layout.putConstraint(SpringLayout.WEST, svBox, 90, SpringLayout.WEST, svLabel);
-//        layout.putConstraint(SpringLayout.NORTH, svBox, 0, SpringLayout.NORTH, svLabel);
+        layout.putConstraint(SpringLayout.WEST, lopBox, 90, SpringLayout.WEST, lopLabel);
+        layout.putConstraint(SpringLayout.NORTH, lopBox, 0, SpringLayout.NORTH, lopLabel);
+
+        layout.putConstraint(SpringLayout.WEST, svBox, 90, SpringLayout.WEST, svLabel);
+        layout.putConstraint(SpringLayout.NORTH, svBox, 0, SpringLayout.NORTH, svLabel);
 
         layout.putConstraint(SpringLayout.WEST, jScrollPaneStudentTable, 300, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, jScrollPaneStudentTable, 10, SpringLayout.NORTH, panel);
 
         layout.putConstraint(SpringLayout.WEST, addStudentBtn, 15, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, addStudentBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, deleteStudentBtn, 60, SpringLayout.WEST, addStudentBtn);
+
+        layout.putConstraint(SpringLayout.WEST, editStudentBtn, 70, SpringLayout.WEST, addStudentBtn);
+        layout.putConstraint(SpringLayout.NORTH, editStudentBtn, 0, SpringLayout.NORTH, addStudentBtn);
+
+        layout.putConstraint(SpringLayout.WEST, deleteStudentBtn, 60, SpringLayout.WEST, editStudentBtn);
 
         layout.putConstraint(SpringLayout.NORTH, clearBtn, 240, SpringLayout.NORTH, panel);
         layout.putConstraint(SpringLayout.WEST, clearBtn, 60, SpringLayout.WEST, deleteStudentBtn);
 
         layout.putConstraint(SpringLayout.NORTH, deleteStudentBtn, 240, SpringLayout.NORTH, panel);
 
-        layout.putConstraint(SpringLayout.WEST, chonlopLabel, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, chonlopLabel, 330, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, importBtn, 300, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.SOUTH, importBtn, 50, SpringLayout.SOUTH, jScrollPaneStudentTable);
 
-//        layout.putConstraint(SpringLayout.WEST, chonlopBox, 60, SpringLayout.WEST, chonlopLabel);
-//        layout.putConstraint(SpringLayout.NORTH, chonlopBox, 0, SpringLayout.NORTH, chonlopLabel);
+        layout.putConstraint(SpringLayout.WEST, chonlopLabel, 80, SpringLayout.WEST, importBtn);
+        layout.putConstraint(SpringLayout.NORTH, chonlopLabel, 0, SpringLayout.NORTH, importBtn);
 
+        layout.putConstraint(SpringLayout.WEST, chonlopBox, 60, SpringLayout.WEST, chonlopLabel);
+        layout.putConstraint(SpringLayout.NORTH, chonlopBox, 0, SpringLayout.NORTH, chonlopLabel);
+
+        layout.putConstraint(SpringLayout.WEST, dauLabel, 200, SpringLayout.WEST, chonlopBox);
+        layout.putConstraint(SpringLayout.NORTH, dauLabel, 0, SpringLayout.NORTH, chonlopBox);
+
+        layout.putConstraint(SpringLayout.WEST, rotLabel, 200, SpringLayout.WEST, chonlopBox);
+        layout.putConstraint(SpringLayout.NORTH, rotLabel, 50, SpringLayout.NORTH, dauLabel);
 
 
         this.add(panel);
@@ -189,23 +220,39 @@ public class BangDiemView extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    public void showListStudents(List<DanhsachlopEntity> list) {
+    public void showListStudents(List<BangdiemEntity> list) {
         int size = list.size();
+        int dau = 0;
+        int rot = 0;
 
-        Object [][] students = new Object[size][6];
+        Object [][] students = new Object[size][9];
         for (int i = 0; i < size; i++) {
             students[i][0] = (i + 1);
             students[i][1] = list.get(i).getSinhvien();
             students[i][2] = list.get(i).getHoten();
-            students[i][3] = list.get(i).getCmnd();
-            students[i][4] = list.get(i).getGioitinh();
-            String tenlop = list.get(i).getLop()+ "-" + list.get(i).getMonhoc();
-            students[i][5] = tenlop;
+            students[i][3] = list.get(i).getDiemgk();
+            students[i][4] = list.get(i).getDiemck();
+            students[i][5] = list.get(i).getDiemkhac();
+            students[i][6] = list.get(i).getDiemtong();
+            String tenlop = list.get(i).getLophoc().getMalop() + "-" + list.get(i).getMonhoc();
+            students[i][7] = tenlop;
+            if (list.get(i).getDau() == 1) {
+                students[i][8] = "Đậu";
+                dau++;
+            }
+            else {
+                students[i][8] = "Rớt";
+                rot++;
+            }
         }
+        double dauPercent = Math.round((dau * 100.0 / size) * 100.0) / 100.0;
+        double rotPercent = 100 - dauPercent;
+        dauLabel.setText("Đậu: " + dau + " (" + dauPercent + "%)");
+        rotLabel.setText("Rớt: " + rot + " (" + rotPercent + "%)");
         studentTable.setModel(new DefaultTableModel(students, columnNames));
     }
 
-    public void showStudent(DanhsachlopEntity student) {
+    public void showStudent(BangdiemEntity student) {
         int index = 0;
         String sinhvien = student.getSinhvien().trim();
         do {
@@ -217,7 +264,7 @@ public class BangDiemView extends JFrame implements ActionListener {
         }
         while (true);
         index = 0;
-        String lopStr = student.getLop().getMalop().trim();
+        String lopStr = student.getLophoc().getMalop().trim();
         do {
             if (lop[index].equals(lopStr)){
                 lopBox.setSelectedIndex(index);
@@ -233,14 +280,12 @@ public class BangDiemView extends JFrame implements ActionListener {
     public void fillStudentFromSelectedRow() {
         int row = studentTable.getSelectedRow();
         if (row >= 0) {
-
             int index = 0;
-            int indexmssv = 0;
             String sinhvien = studentTable.getModel().getValueAt(row, 1).toString().trim();
             do {
-                String [] mssvStr = mssv[indexmssv].split("-");
+                String [] mssvStr = mssv[index].split("-");
                 if (mssvStr[0].trim().equals(sinhvien)){
-                    lopBox.setSelectedIndex(index);
+                    svBox.setSelectedIndex(index);
                     break;
                 }else{
                     index++;
@@ -249,8 +294,7 @@ public class BangDiemView extends JFrame implements ActionListener {
             while (true);
 
             index = 0;
-            int indexlop = 0;
-            String lopStr = studentTable.getModel().getValueAt(row, 5).toString().trim();
+            String lopStr = studentTable.getModel().getValueAt(row, 7).toString().trim();
             do {
 
                 if (lop[index].trim().equals(lopStr)){
@@ -261,6 +305,10 @@ public class BangDiemView extends JFrame implements ActionListener {
                 }
             }
             while (true);
+            gkField.setText(studentTable.getModel().getValueAt(row, 3).toString());
+            ckField.setText(studentTable.getModel().getValueAt(row, 4).toString());
+            khacField.setText(studentTable.getModel().getValueAt(row, 5).toString());
+            tongField.setText(studentTable.getModel().getValueAt(row, 6).toString());
             deleteStudentBtn.setEnabled(true);
             addStudentBtn.setEnabled(false);
         }
@@ -273,20 +321,82 @@ public class BangDiemView extends JFrame implements ActionListener {
         addStudentBtn.setEnabled(true);
     }
 
-    public DanhsachlopEntity getStudentInfo() {
+    public BangdiemEntity getStudentInfo() {
         try {
-            DanhsachlopEntity student = new DanhsachlopEntity();
+            BangdiemEntity student = new BangdiemEntity();
             String mssv = svBox.getSelectedItem().toString();
+            String [] splitMssv = mssv.split("-");
             String monhoc = lopBox.getSelectedItem().toString();
-            student.setSinhvien(mssv);
-            student.setMonhoc(monhoc);
+            String [] splitMon = monhoc.split("-");
+            LophocEntity lophocEntity = new LophocEntity(splitMon[0]);
+            student.setSinhvien(splitMssv[0]);
+            student.setHoten(splitMssv[1]);
+            student.setDiemgk(Double.parseDouble(gkField.toString()));
+            student.setDiemck(Double.parseDouble(ckField.toString()));
+            student.setDiemkhac(Double.parseDouble(khacField.toString()));
+            student.setDiemtong(Double.parseDouble(tongField.toString()));
+            if (student.getDiemtong() >= 5) {
+                student.setDau((byte) 1);
+            }
+            else{
+                student.setDau((byte) 0);
+            }
+
+            student.setMonhoc(splitMon[1]);
+            student.setLophoc(lophocEntity);
             return student;
         } catch (Exception e) {
             showMessage(e.getMessage());
         }
         return null;
     }
-    public void valueChanged(ListSelectionEvent e) {
+
+    public BangdiemEntity getStudentInfoFromSelectedRow(){
+        int row = studentTable.getSelectedRow();
+        try {
+            BangdiemEntity bangdiem = new BangdiemEntity();
+
+            bangdiem.setSinhvien(studentTable.getModel().getValueAt(row, 1).toString());
+            bangdiem.setHoten(studentTable.getModel().getValueAt(row, 2).toString());
+            bangdiem.setDiemgk(Double.parseDouble(studentTable.getModel().getValueAt(row, 3).toString()));
+            bangdiem.setDiemck(Double.parseDouble(studentTable.getModel().getValueAt(row, 4).toString()));
+            bangdiem.setDiemkhac(Double.parseDouble(studentTable.getModel().getValueAt(row, 5).toString()));
+            bangdiem.setDiemtong(Double.parseDouble(studentTable.getModel().getValueAt(row, 6).toString()));
+            String monhoc = studentTable.getModel().getValueAt(row, 7).toString();
+            String [] splitMon = monhoc.split("-");
+            LophocEntity lophocEntity = new LophocEntity(splitMon[0]);
+            bangdiem.setMonhoc(splitMon[1]);
+            bangdiem.setLophoc(lophocEntity);
+            if (studentTable.getModel().getValueAt(row, 8).toString().trim().equals("Đậu")){
+                bangdiem.setDau((byte) 1);
+            }
+            else{
+                bangdiem.setDau((byte) 0);
+
+            }
+            return bangdiem;
+        } catch (Exception e) {
+            showMessage(e.getMessage());
+        }
+        return null;
+    }
+
+    public BangdiemEntity setUpdateBangdiem() {
+        BangdiemEntity bangdiem = getStudentInfoFromSelectedRow();
+        if (bangdiem != null) {
+            bangdiem.setDiemgk(Double.parseDouble(gkField.getText().trim()));
+            bangdiem.setDiemck(Double.parseDouble(ckField.getText().trim()));
+            bangdiem.setDiemkhac(Double.parseDouble(khacField.getText().trim()));
+            bangdiem.setDiemtong(Double.parseDouble(tongField.getText().trim()));
+            if (bangdiem.getDiemtong() >= 5){
+                bangdiem.setDau((byte) 1);
+            }
+            else {
+                bangdiem.setDau((byte) 0);
+            }
+            return bangdiem;
+        }
+        return null;
     }
 
     public void addAddStudentListener(ActionListener listener) {
@@ -297,43 +407,99 @@ public class BangDiemView extends JFrame implements ActionListener {
         deleteStudentBtn.addActionListener(listener);
     }
 
+    public void addEditStudentListener(ActionListener listener) {
+        editStudentBtn.addActionListener(listener);
+    }
+
     public void addClearListener(ActionListener listener) {
         clearBtn.addActionListener(listener);
     }
-
 
     public void addSortListener(ActionListener listener) {
         chonlopBox.addActionListener(listener);
     }
 
     public int getSortIndex(){
-        String item = chonlopBox.getSelectedItem().toString();
         int index = 0;
-        do {
-            if (chonlop[index].equals(item)){
-                chonlopBox.setSelectedIndex(index);
-                break;
-            }else
-                index++;
+        if (chonlopBox.getItemCount() > 0) {
+            String item = chonlopBox.getSelectedItem().toString();
+            do {
+                if (chonlop[index].equals(item)) {
+                    chonlopBox.setSelectedIndex(index);
+                    break;
+                } else
+                    index++;
+            }
+            while (true);
         }
-        while (true);
         return index;
     }
 
     public void sort(int index, StudentDao studentDao){
 
-        String[] split = chonlop[index].split("-");
-        String malop = split[0];
-        String mamon = split[1];
+
         if (index == 0) {
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
+            List<BangdiemEntity> sinhvien = bangdiemDao.readListStudents();
             showListStudents(sinhvien);
         }
         else{
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
+            String[] split = chonlop[index].split("-");
+            String malop = split[0];
+            String mamon = split[1];
+            List<BangdiemEntity> sinhvien = bangdiemDao.readListByMon(split[1]);
             showListStudents(sinhvien);
         }
     }
+
+    public void refreshComboBox(){
+        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
+        List<String> monhocList = new ArrayList<String>();
+        List<String> mssvList = new ArrayList<String>();
+
+        for (BangdiemEntity bd : bangdiem){
+            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
+            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
+            if (!monhocList.contains(monhoc)) {
+                monhocList.add(monhoc);
+            }
+            if (!mssvList.contains(sinhvien)) {
+                mssvList.add(sinhvien);
+            }
+        }
+        lop = monhocList.toArray(new String[0]);
+        monhocList.add(0, "Tất cả");
+        chonlop = monhocList.toArray(new String[0]);
+        mssv = mssvList.toArray(new String[0]);
+        int sortsize = chonlop.length;
+        int index = 0;
+        if (chonlopBox.getItemCount() > 0) {
+            chonlopBox.removeAllItems();
+        }
+        while (index < sortsize){
+            chonlopBox.addItem(chonlop[index]);
+            index++;
+        }
+        sortsize = lop.length;
+        index = 0;
+        lopBox.removeAllItems();
+        while (index < sortsize){
+            lopBox.addItem(lop[index]);
+            index++;
+        }
+
+        sortsize = mssv.length;
+        index = 0;
+        svBox.removeAllItems();
+        while (index < sortsize){
+            svBox.addItem(mssv[index]);
+            index++;
+        }
+    }
+
+    public void addImportListener(ActionListener listener) {
+        importBtn.addActionListener(listener);
+    }
+
 
     public void addListStudentSelectionListener(ListSelectionListener listener) {
         studentTable.getSelectionModel().addListSelectionListener(listener);
@@ -342,4 +508,6 @@ public class BangDiemView extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
+
+
 }

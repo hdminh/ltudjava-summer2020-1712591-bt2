@@ -58,8 +58,12 @@ public class QuanLySinhVienController {
             studentView.showListStudents(listStudents);
         }
 
+    public void onClick() {
+        studentView.refreshComboBox();
+    }
 
-        class AddStudentListener implements ActionListener {
+
+    class AddStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 SinhvienEntity student = studentView.getStudentInfo();
                 if (student != null) {
