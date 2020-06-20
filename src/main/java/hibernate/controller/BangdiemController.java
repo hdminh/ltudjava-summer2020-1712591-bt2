@@ -118,6 +118,7 @@ public class BangdiemController {
             bangdiemDao.addList(bangdiem);
             listBangdiem = bangdiemDao.readListStudents();
             studentView.showListStudents(listBangdiem);
+            studentView.refreshComboBox();
         }
     }
 

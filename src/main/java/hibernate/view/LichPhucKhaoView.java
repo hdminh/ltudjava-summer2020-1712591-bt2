@@ -4,6 +4,7 @@ import com.toedter.calendar.JDateChooser;
 import hibernate.dao.DanhsachlopDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
+import hibernate.entity.DotphuckhaoEntity;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -15,9 +16,7 @@ import java.util.List;
 
 public class LichPhucKhaoView extends JFrame implements ActionListener {
     DanhsachlopDao svhocmonDao = new DanhsachlopDao();
-    String [] lop;
     String [] chonlop;
-    String [] mssv;
 
     private static final long serialVersionUID = 1L;
     private JButton addStudentBtn;
@@ -114,20 +113,16 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    public void showListStudents(java.util.List<DanhsachlopEntity> list) {
+    public void showLich(java.util.List<DotphuckhaoEntity> list) {
         int size = list.size();
 
-        Object [][] students = new Object[size][6];
+        Object [][] lich = new Object[size][6];
         for (int i = 0; i < size; i++) {
-            students[i][0] = (i + 1);
-            students[i][1] = list.get(i).getSinhvien();
-            students[i][2] = list.get(i).getHoten();
-            students[i][3] = list.get(i).getCmnd();
-            students[i][4] = list.get(i).getGioitinh();
-            String tenlop = list.get(i).getLop()+ "-" + list.get(i).getMonhoc();
-            students[i][5] = tenlop;
+            lich[i][0] = i + 1;
+            lich[i][1] = list.get(i).getNgaybatdau();
+            lich[i][2] = list.get(i).getNgayketthuc();
         }
-        studentTable.setModel(new DefaultTableModel(students, columnNames));
+        studentTable.setModel(new DefaultTableModel(lich, columnNames));
     }
 
     public void fillStudentFromSelectedRow() {
@@ -139,17 +134,6 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
          deleteStudentBtn.setEnabled(false);
         addStudentBtn.setEnabled(true);
     }
-
-//    public DanhsachlopEntity getStudentInfo() {
-//        try {
-//
-//        } catch (Exception e) {
-//            showMessage(e.getMessage());
-//        }
-//        return null;
-//    }
-//    public void valueChanged(ListSelectionEvent e) {
-   // }
 
     public void addAddStudentListener(ActionListener listener) {
         addStudentBtn.addActionListener(listener);
@@ -188,12 +172,12 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
         String malop = split[0];
         String mamon = split[1];
         if (index == 0) {
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
-            showListStudents(sinhvien);
+            List<DotphuckhaoEntity> sinhvien = svhocmonDao.readListStudents();
+            showLich(sinhvien);
         }
         else{
             List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
-            showListStudents(sinhvien);
+            showLich(sinhvien);
         }
     }
 

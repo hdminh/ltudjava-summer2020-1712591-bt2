@@ -9,27 +9,33 @@ import hibernate.view.QuanLySinhVienView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoginController {
-    private UserDao userDao;
+    private final UserDao userDao;
     private StudentDao studentDao;
     private LoginView loginView;
     private QuanLySinhVienView studentView;
     List<UserEntity> listUsers;
+    UserEntity giaovu = new UserEntity("giaovu", "giaovu");
 
     public void updateListUser(){
         listUsers = userDao.readListUsers();
     }
 
     public LoginController(LoginView view) {
+        listUsers = new ArrayList<UserEntity>();
         this.loginView = view;
         this.userDao = new UserDao();
-        if (userDao.readListUsers() == null) {
-            UserEntity giaovu = new UserEntity("giaovu", "giaovu");
+        listUsers = userDao.readListUsers();
+        if (listUsers.size() == 0) {
             userDao.add(giaovu);
+            updateListUser();
+        }
+        if (listUsers.size() == 1) {
             studentDao = new StudentDao();
-                if (studentDao.readListStudents() != null){
+            if (studentDao.readListStudents() != null){
                 userDao.addList(studentDao.readListStudents());
             }
         }
@@ -44,7 +50,7 @@ public class LoginController {
     class LoginListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             UserEntity user = loginView.getUser();
-            if ((user.getUsername().equals("giaovu")) && user.getPassword().equals("giaovu")) {
+            if ((user.getUsername().equals(giaovu.getUsername())) && user.getPassword().equals(giaovu.getPassword())) {
                 studentView = new QuanLySinhVienView();
                 MainView mainView = new MainView();
                 mainView.setVisible(true);

@@ -42,7 +42,8 @@ public class DanhSachLopController {
         view.addDeleteStudentListener(new DanhSachLopController.DeleteStudentListener());
         view.addClearListener(new DanhSachLopController.ClearStudentListener());
         view.addListStudentSelectionListener(new DanhSachLopController.ListStudentSelectionListener());
-        view.addSortListener(new DanhSachLopController.SortStudentListener());
+        view.addSortMonListener(new DanhSachLopController.SortMonListener());
+        view.addSortLopListener(new DanhSachLopController.SortLopListener());
         if (svhocmonDao.readListStudents() != null) {
             studentView.showListStudents(svhocmon);
         }
@@ -123,9 +124,15 @@ public class DanhSachLopController {
         }
     }
 
-    class SortStudentListener implements ActionListener {
+    class SortMonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            studentView.sort(studentView.getSortIndex(), studentDao);
+            studentView.sortMon(studentView.getSortMonIndex(), studentDao);
+        }
+    }
+
+    class SortLopListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            studentView.sortLop(studentView.getSortLopIndex(), studentDao);
         }
     }
 

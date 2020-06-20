@@ -8,10 +8,7 @@ import java.util.List;
 
 import static hibernate.utils.HibernateUtils.openSession;
 
-public class DanhsachlopDao {
-    public DanhsachlopDao(){
-    }
-
+public class DotphuckhaoDao {
     public void addList(List<DanhsachlopEntity> students) {
         Session session = openSession();
         Transaction tx = null;
@@ -95,12 +92,4 @@ public class DanhsachlopDao {
             session.close();
             return true;
         }
-    }
-
-    public List<DanhsachlopEntity> readListByMon(String mon) {
-        Session session = openSession();
-        String query = "SELECT sv FROM DanhsachlopEntity sv WHERE sv.monhoc = '" + mon + "'";
-        List<DanhsachlopEntity> sinhvien = session.createQuery(query, DanhsachlopEntity.class).list();
-        return sinhvien;
-    }
 }
