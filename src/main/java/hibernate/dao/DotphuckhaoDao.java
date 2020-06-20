@@ -1,6 +1,6 @@
 package hibernate.dao;
 
-import hibernate.entity.DanhsachlopEntity;
+import hibernate.entity.DotphuckhaoEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -9,12 +9,12 @@ import java.util.List;
 import static hibernate.utils.HibernateUtils.openSession;
 
 public class DotphuckhaoDao {
-    public void addList(List<DanhsachlopEntity> students) {
+    public void addList(List<DotphuckhaoEntity> students) {
         Session session = openSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            for (DanhsachlopEntity sv : students) {
+            for (DotphuckhaoEntity sv : students) {
                 session.save(sv);
             }
             tx.commit();
@@ -28,26 +28,20 @@ public class DotphuckhaoDao {
         }
     }
 
-    public List<DanhsachlopEntity> readListStudents() {
+    public List<DotphuckhaoEntity> readListDotphuckhao() {
         Session session = openSession();
-        String query = "FROM DanhsachlopEntity";
-        List<DanhsachlopEntity> sinhvien = session.createQuery(query, DanhsachlopEntity.class).list();
+        String query = "FROM DotphuckhaoEntity";
+        List<DotphuckhaoEntity> sinhvien = session.createQuery(query, DotphuckhaoEntity.class).list();
         return sinhvien;
     }
 
-    public List<DanhsachlopEntity> readListStudentsByLop(String malop) {
-        Session session = openSession();
-        String query = "FROM DanhsachlopEntity WHERE lop = '" + malop + "'";
-        List<DanhsachlopEntity> sinhvien = session.createQuery(query, DanhsachlopEntity.class).list();
-        return sinhvien;
-    }
 
-    public void add(DanhsachlopEntity student) {
+    public void add(DotphuckhaoEntity dot) {
         Session session = openSession();
         Transaction tx = null;
         try{
             tx = session.beginTransaction();
-            session.save(student);
+            session.save(dot);
             tx.commit();
         }
         catch (RuntimeException ex){
@@ -59,7 +53,7 @@ public class DotphuckhaoDao {
         }
     }
 
-    public void update(DanhsachlopEntity student) {
+    public void update(DotphuckhaoEntity student) {
         Session session = openSession();
         Transaction tx = null;
         try{
@@ -76,20 +70,23 @@ public class DotphuckhaoDao {
         }
     }
 
-    public boolean delete(DanhsachlopEntity student) {
+    public boolean delete(DotphuckhaoEntity dot) {
         Session session = openSession();
         Transaction tx = null;
-        try{
+        try {
             tx = session.beginTransaction();
-            session.delete(student);
+            String query = "SELECT d FROM DotphuckhaoEntity d WHERE d.ngaybatdau = '"
+                    + dot.getNgaybatdau() + "' AND d.ngayketthuc = '" + dot.getNgayketthuc() + "'";
+            DotphuckhaoEntity dotToDelete = session.createQuery(query, DotphuckhaoEntity.class).getSingleResult();
+
+            session.delete(dotToDelete);
             tx.commit();
-        }
-        catch (RuntimeException ex){
+        } catch (RuntimeException ex) {
             tx.rollback();
             throw ex;
-        }
-        finally {
+        } finally {
             session.close();
             return true;
         }
+    }
 }

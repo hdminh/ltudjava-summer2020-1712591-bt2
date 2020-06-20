@@ -1,29 +1,26 @@
 package hibernate.view;
 
 import com.toedter.calendar.JDateChooser;
-import hibernate.dao.DanhsachlopDao;
-import hibernate.dao.StudentDao;
-import hibernate.entity.DanhsachlopEntity;
+import hibernate.dao.DotphuckhaoDao;
 import hibernate.entity.DotphuckhaoEntity;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.sql.Date;
+import java.util.Calendar;
 
 public class LichPhucKhaoView extends JFrame implements ActionListener {
-    DanhsachlopDao svhocmonDao = new DanhsachlopDao();
-    String [] chonlop;
+    DotphuckhaoDao dotphuckhaoDao = new DotphuckhaoDao();
 
     private static final long serialVersionUID = 1L;
-    private JButton addStudentBtn;
-    private JButton deleteStudentBtn;
+    private JButton addBtn;
+    private JButton deleteBtn;
     private JButton clearBtn;
-    private JScrollPane jScrollPaneStudentTable;
-    private JTable studentTable;
+    private JScrollPane jScrollPaneTable;
+    private JTable lichTable;
 
     private JLabel bdLabel;
     private JLabel ktLabel;
@@ -42,11 +39,11 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // khởi tạo các phím chức năng
-        addStudentBtn = new JButton("Thêm");
-        deleteStudentBtn = new JButton("Xóa");
+        addBtn = new JButton("Thêm");
+        deleteBtn = new JButton("Xóa");
         clearBtn = new JButton("Nhập lại");
-        jScrollPaneStudentTable = new JScrollPane();
-        studentTable = new JTable();
+        jScrollPaneTable = new JScrollPane();
+        lichTable = new JTable();
 
         bdLabel = new JLabel("Bắt đầu");
         ktLabel = new JLabel("Kết thúc");
@@ -57,18 +54,18 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
         bdDate.setPreferredSize(new Dimension(100, 20));
         ktDate.setPreferredSize(new Dimension(100, 20));
 
-        studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
-        jScrollPaneStudentTable.setViewportView(studentTable);
-        jScrollPaneStudentTable.setPreferredSize(new Dimension(650, 500));
+        lichTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
+        jScrollPaneTable.setViewportView(lichTable);
+        jScrollPaneTable.setPreferredSize(new Dimension(650, 500));
 
         SpringLayout layout = new SpringLayout();
         JPanel panel = new JPanel();
         panel.setSize(1000, 700);
         panel.setLayout(layout);
-        panel.add(jScrollPaneStudentTable);
+        panel.add(jScrollPaneTable);
 
-        panel.add(addStudentBtn);
-        panel.add(deleteStudentBtn);
+        panel.add(addBtn);
+        panel.add(deleteBtn);
         panel.add(clearBtn);
 
         panel.add(bdLabel);
@@ -89,24 +86,23 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
         layout.putConstraint(SpringLayout.WEST, ktDate, 90, SpringLayout.WEST, ktLabel);
         layout.putConstraint(SpringLayout.NORTH, ktDate, 0, SpringLayout.NORTH, ktLabel);
 
-        layout.putConstraint(SpringLayout.WEST, jScrollPaneStudentTable, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, jScrollPaneStudentTable, 10, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, jScrollPaneTable, 300, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, jScrollPaneTable, 10, SpringLayout.NORTH, panel);
 
-        layout.putConstraint(SpringLayout.WEST, addStudentBtn, 15, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, addStudentBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, deleteStudentBtn, 60, SpringLayout.WEST, addStudentBtn);
+        layout.putConstraint(SpringLayout.WEST, addBtn, 15, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, addBtn, 240, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, deleteBtn, 60, SpringLayout.WEST, addBtn);
 
         layout.putConstraint(SpringLayout.NORTH, clearBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, clearBtn, 60, SpringLayout.WEST, deleteStudentBtn);
+        layout.putConstraint(SpringLayout.WEST, clearBtn, 60, SpringLayout.WEST, deleteBtn);
 
-        layout.putConstraint(SpringLayout.NORTH, deleteStudentBtn, 240, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, deleteBtn, 240, SpringLayout.NORTH, panel);
 
         this.add(panel);
         this.pack();
-        this.setTitle("Lớp theo môn học");
         this.setSize(1000, 700);
-        deleteStudentBtn.setEnabled(false);
-        addStudentBtn.setEnabled(true);
+        deleteBtn.setEnabled(false);
+        addBtn.setEnabled(true);
     }
 
     public void showMessage(String message) {
@@ -122,25 +118,33 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
             lich[i][1] = list.get(i).getNgaybatdau();
             lich[i][2] = list.get(i).getNgayketthuc();
         }
-        studentTable.setModel(new DefaultTableModel(lich, columnNames));
+        lichTable.setModel(new DefaultTableModel(lich, columnNames));
     }
 
-    public void fillStudentFromSelectedRow() {
-        int row = studentTable.getSelectedRow();
-
+    public void fillFromSelectedRow() {
+        int row = lichTable.getSelectedRow();
+        System.out.println("dong: " + row);
+        if (row < 0)
+            return;
+        bdDate.setDate(Date.valueOf(lichTable.getModel().getValueAt(row, 1).toString().trim()));
+        ktDate.setDate(Date.valueOf(lichTable.getModel().getValueAt(row, 2).toString().trim()));
+        deleteBtn.setEnabled(true);
+        addBtn.setEnabled(false);
     }
 
-    public void clearStudentInfo() {
-         deleteStudentBtn.setEnabled(false);
-        addStudentBtn.setEnabled(true);
+    public void clearInfo() {
+        bdDate.setDate(null);
+        ktDate.setDate(null);
+        deleteBtn.setEnabled(false);
+        addBtn.setEnabled(true);
     }
 
     public void addAddStudentListener(ActionListener listener) {
-        addStudentBtn.addActionListener(listener);
+        addBtn.addActionListener(listener);
     }
 
     public void addDeleteStudentListener(ActionListener listener) {
-        deleteStudentBtn.addActionListener(listener);
+        deleteBtn.addActionListener(listener);
     }
 
     public void addClearListener(ActionListener listener) {
@@ -148,44 +152,41 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
     }
 
 
-//    public void addSortListener(ActionListener listener) {
-//        chonlopBox.addActionListener(listener);
-//    }
-
-//    public int getSortIndex(){
-//        String item = chonlopBox.getSelectedItem().toString();
-//        int index = 0;
-//        do {
-//            if (chonlop[index].equals(item)){
-//                chonlopBox.setSelectedIndex(index);
-//                break;
-//            }else
-//                index++;
-//        }
-//        while (true);
-//        return index;
-//    }
-
-    public void sort(int index, StudentDao studentDao){
-
-        String[] split = chonlop[index].split("-");
-        String malop = split[0];
-        String mamon = split[1];
-        if (index == 0) {
-            List<DotphuckhaoEntity> sinhvien = svhocmonDao.readListStudents();
-            showLich(sinhvien);
-        }
-        else{
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
-            showLich(sinhvien);
-        }
-    }
-
-    public void addListStudentSelectionListener(ListSelectionListener listener) {
-        studentTable.getSelectionModel().addListSelectionListener(listener);
+    public void addListSelectionListener(ListSelectionListener listener) {
+        lichTable.getSelectionModel().addListSelectionListener(listener);
     }
 
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    public DotphuckhaoEntity getInfo() {
+        try {
+            DotphuckhaoEntity dot = new DotphuckhaoEntity();
+            Date bd = new Date(bdDate.getDate().getTime());
+            Date kt = new Date(ktDate.getDate().getTime());
+            System.out.println(bd + "  " + kt);
+            dot.setNgaybatdau(bd);
+            dot.setNgayketthuc(kt);
+            return dot;
+        } catch (Exception e) {
+            showMessage(e.getMessage());
+        }
+        return null;
+    }
+
+    public DotphuckhaoEntity getInfoFromSelectedRow() {
+        int row = lichTable.getSelectedRow();
+        try {
+            DotphuckhaoEntity dot = new DotphuckhaoEntity();
+            Date bd = Date.valueOf(lichTable.getModel().getValueAt(row, 1).toString().trim());
+            Date kt = Date.valueOf(lichTable.getModel().getValueAt(row, 2).toString().trim());
+            dot.setNgaybatdau(bd);
+            dot.setNgayketthuc(kt);
+            return dot;
+        } catch (Exception e) {
+            showMessage(e.getMessage());
+        }
+        return null;
     }
 }

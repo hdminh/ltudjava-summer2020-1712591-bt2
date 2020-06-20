@@ -1,6 +1,5 @@
 package hibernate.view;
 
-import hibernate.controller.DanhSachLopController;
 import hibernate.controller.QuanLySinhVienController;
 import hibernate.dao.DanhsachlopDao;
 import hibernate.dao.LophocDao;
@@ -281,7 +280,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     public void addClearListener(ActionListener listener) {
         clearBtn.addActionListener(listener);
     }
-
 
     public void addSortMonListener(ActionListener listener) {
         chonmonBox.addActionListener(listener);

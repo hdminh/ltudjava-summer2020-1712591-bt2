@@ -11,6 +11,7 @@ public class DotphuckhaoEntity {
     private Date ngayketthuc;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "madot")
     public int getMadot() {
         return madot;
