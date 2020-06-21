@@ -64,8 +64,11 @@ public class DonphuckhaoDao {
             String query = "FROM DonphuckhaoEntity  WHERE sinhvien = '" + don.getSinhvien() + "' AND monhoc = '" + don.getMonhoc()
                     + "' AND cotdiem = '" + don.getCotdiem() + "'" ;
             DonphuckhaoEntity donToEdit = session.createQuery(query, DonphuckhaoEntity.class).getSingleResult();
+
             donToEdit.setTrangthai(don.getTrangthai());
-            donToEdit.setDiemsaupk(don.getDiemsaupk());
+            if (don.getDiemsaupk() != null) {
+                donToEdit.setDiemsaupk(don.getDiemsaupk());
+            }
             session.update(donToEdit);
             tx.commit();
         }

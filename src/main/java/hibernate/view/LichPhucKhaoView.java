@@ -122,7 +122,6 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
 
     public void fillFromSelectedRow() {
         int row = lichTable.getSelectedRow();
-        System.out.println("dong: " + row);
         if (row < 0)
             return;
         bdDate.setDate(Date.valueOf(lichTable.getModel().getValueAt(row, 1).toString().trim()));
@@ -164,7 +163,7 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
             DotphuckhaoEntity dot = new DotphuckhaoEntity();
             Date bd = new Date(bdDate.getDate().getTime());
             Date kt = new Date(ktDate.getDate().getTime());
-            System.out.println(bd + "    " + kt);
+
             dot.setNgaybatdau(bd);
             dot.setNgayketthuc(kt);
             return dot;

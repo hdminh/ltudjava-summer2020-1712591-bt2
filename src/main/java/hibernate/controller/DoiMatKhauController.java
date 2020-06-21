@@ -46,15 +46,11 @@ public class DoiMatKhauController {
                 changeP.setUsername(isLogin.getUsername());
                 changeP.setPassword(newP);
                 userDao.edit(changeP);
-
+                isLogin.setPassword(newP);
                 doiMatKhauView.showMessage("Đổi thành công!");
+                doiMatKhauView.clearInfo();
             }
         }
     }
 
-    class LogoutListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-
-        }
-    }
 }

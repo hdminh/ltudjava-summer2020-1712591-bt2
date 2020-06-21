@@ -42,17 +42,18 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
 
     private JComboBox trangthaiBox;
 
-    private JTextField diemTruocField;
-    private JTextField diemSauField;
+    private JTextArea lydoArea;
+
     private JTextField mssvField;
     private JTextField dotPKField;
     private JTextField monhocField;
+    private JTextField diemSauField;
     private JTextField cotdiemField;
+    private JTextField diemTruocField;
 
-    private JTextArea lydoArea;
 
     private String [] columnNames = new String [] {
-            "STT", "MSSV", "Môn học", "Cột điểm", "Điểm mong muốn", "Điểm sau phúc khảo", "Lý do", "Trạng thái", "Đợt"};
+            "STT", "MSSV", "Họ tên", "Môn học", "Cột điểm", "Điểm mong muốn", "Điểm sau phúc khảo", "Lý do", "Trạng thái", "Đợt"};
     private Object data = new Object [][] {};
 
     public DonPhucKhaoView() {
@@ -199,17 +200,18 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
     public void showPhuckhao(List<DonphuckhaoEntity> list) {
         int size = list.size();
 
-        Object [][] lich = new Object[size][9];
+        Object [][] lich = new Object[size][10];
         for (int i = 0; i < size; i++) {
             lich[i][0] = i + 1;
             lich[i][1] = list.get(i).getSinhvien();
-            lich[i][2] = list.get(i).getMonhoc();
-            lich[i][3] = cotdiem[list.get(i).getCotdiem()];
-            lich[i][4] = list.get(i).getDiemtruocpk();
-            lich[i][5] = list.get(i).getDiemsaupk();
-            lich[i][6] = list.get(i).getLydo();
-            lich[i][7] = list.get(i).getTrangthai();
-            lich[i][8] = dotPK[list.get(i).getDotphuckhao()];
+            lich[i][2] = list.get(i).getHoten();
+            lich[i][3] = list.get(i).getMonhoc();
+            lich[i][4] = cotdiem[list.get(i).getCotdiem()];
+            lich[i][5] = list.get(i).getDiemtruocpk();
+            lich[i][6] = list.get(i).getDiemsaupk();
+            lich[i][7] = list.get(i).getLydo();
+            lich[i][8] = list.get(i).getTrangthai();
+            lich[i][9] = dotPK[list.get(i).getDotphuckhao()];
 
         }
         phuckhaoTable.setModel(new DefaultTableModel(lich, columnNames));
@@ -220,18 +222,18 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
         if (row < 0)
             return;
         mssvField.setText(phuckhaoTable.getModel().getValueAt(row, 1).toString());
-        monhocField.setText(phuckhaoTable.getModel().getValueAt(row, 2).toString());
-        cotdiemField.setText(phuckhaoTable.getModel().getValueAt(row, 3).toString());
-        diemTruocField.setText(phuckhaoTable.getModel().getValueAt(row, 4).toString().trim());
-        if (phuckhaoTable.getModel().getValueAt(row, 5) != null) {
-            diemSauField.setText(phuckhaoTable.getModel().getValueAt(row, 5).toString().trim());
+        monhocField.setText(phuckhaoTable.getModel().getValueAt(row, 3).toString());
+        cotdiemField.setText(phuckhaoTable.getModel().getValueAt(row, 4).toString());
+        diemTruocField.setText(phuckhaoTable.getModel().getValueAt(row, 5).toString().trim());
+        if (phuckhaoTable.getModel().getValueAt(row, 6) != null) {
+            diemSauField.setText(phuckhaoTable.getModel().getValueAt(row, 6).toString().trim());
         }
         else {
             diemSauField.setText("");
         }
-        lydoArea.setText(phuckhaoTable.getModel().getValueAt(row, 6).toString());
-        trangthaiBox.setSelectedItem(phuckhaoTable.getModel().getValueAt(row, 7));
-        dotPKField.setText(phuckhaoTable.getModel().getValueAt(row, 8).toString());
+        lydoArea.setText(phuckhaoTable.getModel().getValueAt(row, 7).toString());
+        trangthaiBox.setSelectedItem(phuckhaoTable.getModel().getValueAt(row, 8));
+        dotPKField.setText(phuckhaoTable.getModel().getValueAt(row, 9).toString());
         edtBtn.setEnabled(true);
     }
 
@@ -277,7 +279,9 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
             }
             donPK.setDiemtruocpk(Double.parseDouble(diemTruocField.getText()));
             donPK.setLydo(lydoArea.getText());
-            donPK.setDiemsaupk(Double.parseDouble(diemSauField.getText()));
+            if (diemSauField.getText() != null && !diemSauField.getText().equals("")) {
+                donPK.setDiemsaupk(Double.parseDouble(diemSauField.getText()));
+            }
             donPK.setTrangthai(trangthaiBox.getSelectedItem().toString());
             index = 0;
             while (true) {

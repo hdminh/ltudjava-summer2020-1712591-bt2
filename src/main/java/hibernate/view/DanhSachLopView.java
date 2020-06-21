@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DanhSachLopView extends JFrame implements ActionListener {
-    QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
     String [] chonmon;
     String [] chonlop;
@@ -169,9 +168,9 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     }
 
     public void fillStudentFromSelectedRow() {
+
         int row = studentTable.getSelectedRow();
         if (row >= 0) {
-
             int index = 0;
             String sinhvien = studentTable.getModel().getValueAt(row, 1).toString().trim();
             do {
@@ -188,7 +187,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             index = 0;
             String lopStr = studentTable.getModel().getValueAt(row, 5).toString().trim();
             do {
-
                 if (lop[index].trim().equals(lopStr)){
                     lopBox.setSelectedIndex(index);
                     break;
@@ -214,15 +212,11 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             DanhsachlopEntity student = new DanhsachlopEntity();
             String mssv = svBox.getSelectedItem().toString();
             String [] splitMssv = mssv.split("-");
-            SinhvienEntity sinhvienEntity = qlsvController.findSinhVienByMssv(splitMssv[0]);
-            System.out.println(sinhvienEntity.getCmnd());
             String monhoc = lopBox.getSelectedItem().toString();
             String [] splitMon = monhoc.split("-");
             LophocEntity lophocEntity = new LophocEntity(splitMon[0]);
-            student.setSinhvien(sinhvienEntity.getMssv());
-            student.setHoten(sinhvienEntity.getHoten());
-            student.setCmnd(sinhvienEntity.getCmnd());
-            student.setGioitinh(sinhvienEntity.getGioitinh());
+            student.setSinhvien(splitMssv[0]);
+            student.setHoten(splitMssv[1]);
             student.setMonhoc(splitMon[1]);
             student.setLop(lophocEntity);
             return student;

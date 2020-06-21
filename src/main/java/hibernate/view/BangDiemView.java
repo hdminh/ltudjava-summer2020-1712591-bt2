@@ -306,6 +306,10 @@ public class BangDiemView extends JFrame implements ActionListener {
     public void clearStudentInfo() {
         svBox.setSelectedIndex(0);
         lopBox.setSelectedIndex(0);
+        gkField.setText("");
+        ckField.setText("");
+        khacField.setText("");
+        tongField.setText("");
         deleteStudentBtn.setEnabled(false);
         addStudentBtn.setEnabled(true);
     }

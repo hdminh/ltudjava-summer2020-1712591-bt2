@@ -35,7 +35,6 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
 
     public void setMssvField(String text) {
         this.mssvField.setText(text);
-
     }
 
     private JComboBox cotdiemBox;
@@ -46,7 +45,7 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
     private JTextArea lydoArea;
 
     private String [] columnNames = new String [] {
-            "STT", "MSSV", "Môn học", "Cột điểm", "Điểm mong muốn", "Điểm sau phúc khảo", "Lý do", "Trạng thái", "Đợt"};
+            "STT", "MSSV","Họ tên", "Môn học", "Cột điểm", "Điểm mong muốn", "Điểm sau phúc khảo", "Lý do", "Trạng thái", "Đợt"};
     private Object data = new Object [][] {};
 
     public SinhVienPhucKhaoView() {
@@ -176,17 +175,18 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
     public void showPhuckhao(List<DonphuckhaoEntity> list) {
         int size = list.size();
 
-        Object [][] lich = new Object[size][9];
+        Object [][] lich = new Object[size][10];
         for (int i = 0; i < size; i++) {
             lich[i][0] = i + 1;
             lich[i][1] = list.get(i).getSinhvien();
-            lich[i][2] = list.get(i).getMonhoc();
-            lich[i][3] = cotdiem[list.get(i).getCotdiem()];
-            lich[i][4] = list.get(i).getDiemtruocpk();
-            lich[i][5] = list.get(i).getDiemsaupk();
-            lich[i][6] = list.get(i).getLydo();
-            lich[i][7] = list.get(i).getTrangthai();
-            lich[i][8] = dotPK[list.get(i).getDotphuckhao()];
+            lich[i][2] = list.get(i).getHoten();
+            lich[i][3] = list.get(i).getMonhoc();
+            lich[i][4] = cotdiem[list.get(i).getCotdiem()];
+            lich[i][5] = list.get(i).getDiemtruocpk();
+            lich[i][6] = list.get(i).getDiemsaupk();
+            lich[i][7] = list.get(i).getLydo();
+            lich[i][8] = list.get(i).getTrangthai();
+            lich[i][9] = dotPK[list.get(i).getDotphuckhao()];
 
         }
         phuckhaoTable.setModel(new DefaultTableModel(lich, columnNames));
@@ -196,7 +196,6 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
         int row = phuckhaoTable.getSelectedRow();
         if (row < 0)
             return;
-
         mssvField.setText(phuckhaoTable.getModel().getValueAt(row, 1).toString());
         monhocBox.setSelectedItem(phuckhaoTable.getModel().getValueAt(row, 2).toString());
         cotdiemBox.setSelectedItem(phuckhaoTable.getModel().getValueAt(row, 3).toString());
@@ -208,6 +207,15 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
 
     public void clearInfo() {
         diemTruocField.setText("");
+        if (dotPKBox.getItemCount() > 0) {
+            dotPKBox.setSelectedIndex(0);
+        }
+        if (monhocBox.getItemCount() > 0) {
+            monhocBox.setSelectedIndex(0);
+        }
+        if (cotdiemBox.getItemCount() > 0) {
+            cotdiemBox.setSelectedIndex(0);
+        }
         lydoArea.setText("");
         addBtn.setEnabled(true);
     }
@@ -220,7 +228,6 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
         clearBtn.addActionListener(listener);
     }
 
-
     public void addListSelectionListener(ListSelectionListener listener) {
         phuckhaoTable.getSelectionModel().addListSelectionListener(listener);
     }
@@ -228,16 +235,17 @@ public class SinhVienPhucKhaoView extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
     }
 
-    public DonphuckhaoEntity getInfo() {
+    public DonphuckhaoEntity getInfoFromSelectedRow() {
         try {
             DonphuckhaoEntity donPK = new DonphuckhaoEntity();
             donPK.setSinhvien(mssvField.getText());
             donPK.setMonhoc(monhocBox.getSelectedItem().toString());
             donPK.setCotdiem(cotdiemBox.getSelectedIndex());
             donPK.setDiemtruocpk(Double.parseDouble(diemTruocField.getText()));
-            donPK.setLydo(lydoArea.getText());
             donPK.setTrangthai(trangthai[0]);
             donPK.setDotphuckhao(dotPKBox.getSelectedIndex());
+            donPK.setLydo(lydoArea.getText());
+
             return donPK;
         } catch (Exception e) {
             showMessage(e.getMessage());

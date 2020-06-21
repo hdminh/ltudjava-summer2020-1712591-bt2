@@ -95,4 +95,10 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
     }
+
+    public void clearInfo() {
+        oldField.setText("");
+        newField.setText("");
+        retypeField.setText("");
+    }
 }

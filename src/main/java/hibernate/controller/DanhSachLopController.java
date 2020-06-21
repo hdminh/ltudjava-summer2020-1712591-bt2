@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DanhSachLopController {
+    QuanLySinhVienController qlsvController;
     StudentDao studentDao;
     MonhocDao monhocDao;
     LophocDao lophocDao;
@@ -28,6 +29,7 @@ public class DanhSachLopController {
     private List<DanhsachlopEntity> danhsachlop;
 
     public DanhSachLopController(){
+        qlsvController = new QuanLySinhVienController();
         studentDao = new StudentDao();
         monhocDao = new MonhocDao();
         danhsachlopDao = new DanhsachlopDao();
@@ -150,6 +152,10 @@ public class DanhSachLopController {
         public void actionPerformed(ActionEvent e) {
             DanhsachlopEntity student = studentView.getStudentInfo();
             if (student != null) {
+                SinhvienEntity sinhvienEntity = qlsvController.findSinhVienByMssv(student.getSinhvien());
+                student.setHoten(sinhvienEntity.getHoten());
+                student.setCmnd(sinhvienEntity.getCmnd());
+                student.setGioitinh(sinhvienEntity.getGioitinh());
                 danhsachlopDao.add(student);
                 refreshTable();
                 studentView.showMessage("Đã thêm vào lớp học!");

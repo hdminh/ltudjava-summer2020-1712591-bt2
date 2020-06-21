@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class DonphuckhaoEntity {
     private int madon;
     private String sinhvien;
+    private String hoten;
     private String monhoc;
     private String lydo;
     private Integer cotdiem;
@@ -33,6 +34,16 @@ public class DonphuckhaoEntity {
 
     public void setSinhvien(String sinhvien) {
         this.sinhvien = sinhvien;
+    }
+
+    @Basic
+    @Column(name = "hoten")
+    public String getHoten() {
+        return hoten;
+    }
+
+    public void setHoten(String hoten) {
+        this.hoten = hoten;
     }
 
     @Basic
@@ -114,6 +125,7 @@ public class DonphuckhaoEntity {
 
         if (madon != that.madon) return false;
         if (sinhvien != null ? !sinhvien.equals(that.sinhvien) : that.sinhvien != null) return false;
+        if (hoten != null ? !hoten.equals(that.hoten) : that.hoten != null) return false;
         if (monhoc != null ? !monhoc.equals(that.monhoc) : that.monhoc != null) return false;
         if (lydo != null ? !lydo.equals(that.lydo) : that.lydo != null) return false;
         if (cotdiem != null ? !cotdiem.equals(that.cotdiem) : that.cotdiem != null) return false;
@@ -129,6 +141,7 @@ public class DonphuckhaoEntity {
     public int hashCode() {
         int result = madon;
         result = 31 * result + (sinhvien != null ? sinhvien.hashCode() : 0);
+        result = 31 * result + (hoten != null ? hoten.hashCode() : 0);
         result = 31 * result + (monhoc != null ? monhoc.hashCode() : 0);
         result = 31 * result + (lydo != null ? lydo.hashCode() : 0);
         result = 31 * result + (cotdiem != null ? cotdiem.hashCode() : 0);
