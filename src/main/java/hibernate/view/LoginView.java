@@ -69,6 +69,7 @@ public class LoginView extends JFrame implements ActionListener {
 
     public UserEntity getUser() {
         return new UserEntity(usernameField.getText().trim(), String.copyValueOf(passwordField.getPassword()).trim());
+
     }
 
     public void addLoginListener(ActionListener listener) {

@@ -1,6 +1,5 @@
 package hibernate.view;
 
-import hibernate.dao.LophocDao;
 import hibernate.dao.StudentDao;
 import hibernate.entity.LophocEntity;
 import hibernate.entity.SinhvienEntity;
@@ -12,17 +11,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
-import hibernate.utils.HibernateUtils.*;
 
 public class QuanLySinhVienView extends JFrame implements ActionListener, ListSelectionListener {
-    LophocDao lophocDao = new LophocDao();
-    StudentDao studentDao = new StudentDao();
-
     String [] gioitinh = {"Nam", "Nữ"};
     String [] lop;
-    String [] sortlop;
+    String [] chonlop;
 
     private static final long serialVersionUID = 1L;
     private JButton addStudentBtn;
@@ -54,11 +48,18 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
     // định nghĩa dữ liệu mặc định của bẳng student là rỗng
     private Object data = new Object [][] {};
 
-    public QuanLySinhVienView() {
-        initComponents();
+    public void setLop(String[] lop) {
+        this.lop = lop;
     }
 
-    private void initComponents() {
+    public void setChonlop(String[] chonlop) {
+        this.chonlop = chonlop;
+    }
+
+    public QuanLySinhVienView() {
+    }
+
+    public void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // khởi tạo các phím chức năng
         addStudentBtn = new JButton("Thêm");
@@ -77,18 +78,15 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         gioitinhLabel = new JLabel("Giới tính");
         lopLabel = new JLabel("Lớp");
         chonlopLabel = new JLabel("Chọn lớp");
-        List<String> lophoc = lophocDao.readMaLop();
-
-        lop = lophoc.toArray(new String[0]);
-        lophoc.add(0, "Tất cả");
-        sortlop = lophoc.toArray(new String[0]);
         // khởi tạo các trường nhập dữ liệu cho student
         mssvField = new JTextField(10);
         hotenField = new JTextField(15);
         cmndField = new JTextField(10);
+
         gioitinhBox = new JComboBox(gioitinh);
         lopBox = new JComboBox(lop);
-        chonlopBox = new JComboBox(sortlop);
+        chonlopBox = new JComboBox(chonlop);
+
         // cài đặt các cột và data cho bảng student
         studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
         jScrollPaneStudentTable.setViewportView(studentTable);
@@ -318,22 +316,20 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
     }
 
     public void refreshComboBox(){
-        List<String> lophoc = lophocDao.readMaLop();
-        lop = lophoc.toArray(new String[0]);
-        lophoc.add(0, "Tất cả");
-        sortlop = lophoc.toArray(new String[0]);
-        int sortsize = sortlop.length;
+        int sortsize = chonlop.length;
         int index = 0;
         if (chonlopBox.getItemCount() > 0) {
             chonlopBox.removeAllItems();
         }
         while (index < sortsize){
-            chonlopBox.addItem(sortlop[index]);
+            chonlopBox.addItem(chonlop[index]);
             index++;
         }
         sortsize = lop.length;
         index = 0;
-        lopBox.removeAllItems();
+        if (lopBox.getItemCount() > 0) {
+            lopBox.removeAllItems();
+        }
         while (index < sortsize){
             lopBox.addItem(lop[index]);
             index++;
@@ -351,7 +347,7 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
             item = chonlopBox.getSelectedItem().toString();
             index = 0;
             do {
-                if (sortlop[index].equals(item)) {
+                if (chonlop[index].equals(item)) {
                     chonlopBox.setSelectedIndex(index);
                     break;
                 } else
@@ -362,13 +358,13 @@ public class QuanLySinhVienView extends JFrame implements ActionListener, ListSe
         return index;
     }
 
-    public void sort(int index){
+    public void sort(int index, StudentDao studentDao){
         if (index == 0) {
             List<SinhvienEntity> sinhvien = studentDao.readListStudents();
             showListStudents(sinhvien);
         }
         else{
-            List<SinhvienEntity> sinhvien = studentDao.readListByLop(sortlop[index]);
+            List<SinhvienEntity> sinhvien = studentDao.readListByLop(chonlop[index]);
             showListStudents(sinhvien);
         }
     }

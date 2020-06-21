@@ -9,6 +9,9 @@ import java.util.List;
 import static hibernate.utils.HibernateUtils.openSession;
 
 public class DotphuckhaoDao {
+    public DotphuckhaoDao(){
+
+    }
     public void addList(List<DotphuckhaoEntity> students) {
         Session session = openSession();
         Transaction tx = null;
@@ -31,6 +34,13 @@ public class DotphuckhaoDao {
     public List<DotphuckhaoEntity> readListDotphuckhao() {
         Session session = openSession();
         String query = "FROM DotphuckhaoEntity";
+        List<DotphuckhaoEntity> sinhvien = session.createQuery(query, DotphuckhaoEntity.class).list();
+        return sinhvien;
+    }
+
+    public List<DotphuckhaoEntity> readListDotphuckhaoConHan() {
+        Session session = openSession();
+        String query = "FROM DotphuckhaoEntity WHERE ngaybatdau <= CURRENT_DATE AND ngayketthuc >= CURRENT_DATE";
         List<DotphuckhaoEntity> sinhvien = session.createQuery(query, DotphuckhaoEntity.class).list();
         return sinhvien;
     }

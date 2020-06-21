@@ -28,17 +28,7 @@ public class LichPhucKhaoController {
         lichView.showLich(listDot);
     }
 
-    public LichPhucKhaoController(LichPhucKhaoView view) {
-        listDot = new ArrayList<DotphuckhaoEntity>();
-        dotphuckhaoDao = new DotphuckhaoDao();
-        lichView = view;
-        view.addAddStudentListener(new LichPhucKhaoController.AddStudentListener());
-        view.addDeleteStudentListener(new LichPhucKhaoController.DeleteStudentListener());
-        view.addClearListener(new LichPhucKhaoController.ClearStudentListener());
-        view.addListSelectionListener(new LichPhucKhaoController.ListDotSelectionListener());
-    }
-
-    public Container showContentPane() {
+    public Container getContentPane() {
         return lichView.getContentPane();
     }
 

@@ -1,5 +1,6 @@
 package hibernate.controller;
 
+import hibernate.dao.LophocDao;
 import hibernate.dao.StudentDao;
 import hibernate.dao.UserDao;
 import hibernate.entity.SinhvienEntity;
@@ -16,35 +17,39 @@ import java.util.List;
 
 public class QuanLySinhVienController {
     private StudentDao studentDao;
-    private UserDao userDao;
+    LophocDao lophocDao;
+    UserDao userDao;
     private QuanLySinhVienView studentView;
     private List<SinhvienEntity> listStudents;
 
     public QuanLySinhVienController(){
         studentDao = new StudentDao();
+        lophocDao = new LophocDao();
         listStudents = studentDao.readListStudents();
-    }
+        studentView = new QuanLySinhVienView();
 
-    public QuanLySinhVienController(QuanLySinhVienView view) {
-        this.studentView = view;
-        studentDao = new StudentDao();
-        listStudents = studentDao.readListStudents();
-        view.addAddStudentListener(new AddStudentListener());
-        view.addEdiStudentListener(new EditStudentListener());
-        view.addDeleteStudentListener(new DeleteStudentListener());
-        view.addClearListener(new ClearStudentListener());
-        view.addImportListener(new ImportStudentListener());
-        view.addListStudentSelectionListener(new ListStudentSelectionListener());
-        view.addSortListener(new SortStudentListener());
+        List<String> lophocList = lophocDao.readMaLop();
+        String [] lop = lophocList.toArray(new String[0]);
+        studentView.setLop(lop);
+        lophocList.add(0, "Tất cả");
+        String [] chonlop = lophocList.toArray(new String[0]);
+        studentView.setChonlop(chonlop);
+        studentView.initComponents();
+        studentView.addAddStudentListener(new AddStudentListener());
+        studentView.addEdiStudentListener(new EditStudentListener());
+        studentView.addDeleteStudentListener(new DeleteStudentListener());
+        studentView.addClearListener(new ClearStudentListener());
+        studentView.addImportListener(new ImportStudentListener());
+        studentView.addListStudentSelectionListener(new ListStudentSelectionListener());
+        studentView.addSortListener(new SortStudentListener());
         studentView.showListStudents(listStudents);
-
     }
 
     public SinhvienEntity findSinhVienByMssv(String mssv){
         return studentDao.getStudentByMssv(mssv);
     }
 
-        public Container showContentPane(){
+        public Container getContentPane(){
             return studentView.getContentPane();
         }
 
@@ -59,9 +64,16 @@ public class QuanLySinhVienController {
         }
 
     public void onClick() {
-        studentView.refreshComboBox();
+        refreshComboBox();
     }
 
+    public void refreshComboBox(){
+        List<String> lophoc = lophocDao.readMaLop();
+        studentView.setLop(lophoc.toArray(new String[0]));
+        lophoc.add(0, "Tất cả");
+        studentView.setChonlop(lophoc.toArray(new String[0]));
+        studentView.refreshComboBox();
+    }
 
     class AddStudentListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
@@ -119,14 +131,14 @@ public class QuanLySinhVienController {
             }
             studentDao.writeToDB(sinhvien);
             listStudents = studentDao.readListStudents();
-            studentView.refreshComboBox();
+            refreshComboBox();
             studentView.showListStudents(listStudents);
         }
     }
 
     class SortStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            studentView.sort(studentView.getSortIndex());
+            studentView.sort(studentView.getSortIndex(), studentDao);
         }
     }
 

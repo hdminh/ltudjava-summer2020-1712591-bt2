@@ -14,14 +14,36 @@ import java.util.List;
 
 public class LoginController {
     private final UserDao userDao;
+    private UserEntity isLogin;
     private StudentDao studentDao;
     private LoginView loginView;
-    private QuanLySinhVienView studentView;
+    MainController mainController;
+    SinhVienController sinhVienController;
     List<UserEntity> listUsers;
-    UserEntity giaovu = new UserEntity("giaovu", "giaovu");
+    String giaovuDefault = "giaovu";
+    UserEntity giaovu = new UserEntity(giaovuDefault, giaovuDefault);
 
     public void updateListUser(){
         listUsers = userDao.readListUsers();
+    }
+
+    public LoginController(){
+        listUsers = new ArrayList<UserEntity>();
+        this.loginView = new LoginView();
+        this.userDao = new UserDao();
+        listUsers = userDao.readListUsers();
+        if (listUsers.size() == 0) {
+            userDao.add(giaovu);
+            updateListUser();
+        }
+        if (listUsers.size() == 1) {
+            studentDao = new StudentDao();
+            if (studentDao.readListStudents() != null){
+                userDao.addList(studentDao.readListStudents());
+            }
+        }
+        updateListUser();
+        loginView.addLoginListener(new LoginListener());
     }
 
     public LoginController(LoginView view) {
@@ -47,17 +69,27 @@ public class LoginController {
         loginView.setVisible(true);
     }
 
+    public UserEntity getIsLoginUser(){
+        return isLogin;
+    }
+
     class LoginListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             UserEntity user = loginView.getUser();
+            System.out.println("user: " + user.getUsername() + "  " + user.getPassword());
             if ((user.getUsername().equals(giaovu.getUsername())) && user.getPassword().equals(giaovu.getPassword())) {
-                studentView = new QuanLySinhVienView();
-                MainView mainView = new MainView();
-                mainView.setVisible(true);
+                //giao vu
+                isLogin = user;
+                mainController = new MainController(isLogin);
                 loginView.setVisible(false);
+                mainController.showMainView();
+
             } else if (listUsers.contains(user)) {
-                QuanLySinhVienController qlsv = new QuanLySinhVienController(new QuanLySinhVienView());
-                qlsv.showStudentView();
+                //sinh vien
+                isLogin = user;
+                sinhVienController = new SinhVienController(isLogin);
+                loginView.setVisible(false);
+                sinhVienController.showSinhVienView();
             }
             else{
                 loginView.showMessage("Username hoặc Password không đúng.");

@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BangdiemController {
@@ -22,30 +23,44 @@ public class BangdiemController {
     private BangdiemDao bangdiemDao;
     private BangDiemView studentView;
     private List<SinhvienEntity> listStudents;
-    private List<MonhocEntity> listMonhoc;
     private List<BangdiemEntity> listBangdiem;
 
     public BangdiemController(){
-        listStudents = studentDao.readListStudents();
-    }
-
-    public BangdiemController(BangDiemView view) {
         studentDao = new StudentDao();
         monhocDao = new MonhocDao();
         bangdiemDao = new BangdiemDao();
-        this.studentView = view;
-        listBangdiem = bangdiemDao.readListStudents();
-        view.addAddStudentListener(new BangdiemController.AddStudentListener());
-        view.addDeleteStudentListener(new BangdiemController.DeleteStudentListener());
-        view.addEditStudentListener(new BangdiemController.EditStudentListener());
-        view.addClearListener(new BangdiemController.ClearStudentListener());
-        view.addListStudentSelectionListener(new BangdiemController.ListStudentSelectionListener());
-        view.addSortListener(new BangdiemController.SortStudentListener());
-        view.addImportListener(new BangdiemController.ImportListener());
+        listStudents = studentDao.readListStudents();
+        studentView = new BangDiemView();
+        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
+        List<String> monhocList = new ArrayList<String>();
+        List<String> mssvList = new ArrayList<String>();
 
+        for (BangdiemEntity bd : bangdiem){
+            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
+            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
+            if (!monhocList.contains(monhoc)) {
+                monhocList.add(monhoc);
+            }
+            if (!mssvList.contains(sinhvien)) {
+                mssvList.add(sinhvien);
+            }
+        }
+        studentView.setLop(monhocList.toArray(new String[0]));
+        monhocList.add(0, "Tất cả");
+        studentView.setChonlop(monhocList.toArray(new String[0]));
+        studentView.setMssv(mssvList.toArray(new String[0]));
+        studentView.initComponents();
+
+        studentView.addAddStudentListener(new BangdiemController.AddStudentListener());
+        studentView.addDeleteStudentListener(new BangdiemController.DeleteStudentListener());
+        studentView.addEditStudentListener(new BangdiemController.EditStudentListener());
+        studentView.addClearListener(new BangdiemController.ClearStudentListener());
+        studentView.addListStudentSelectionListener(new BangdiemController.ListStudentSelectionListener());
+        studentView.addSortListener(new BangdiemController.SortStudentListener());
+        studentView.addImportListener(new BangdiemController.ImportListener());
     }
 
-    public Container showContentPane(){
+    public Container getContentPane(){
         return studentView.getContentPane();
     }
 
@@ -105,7 +120,7 @@ public class BangdiemController {
 
     class SortStudentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            studentView.sort(studentView.getSortIndex(), studentDao);
+            studentView.sort(studentView.getSortIndex(), bangdiemDao);
         }
     }
 
@@ -118,8 +133,30 @@ public class BangdiemController {
             bangdiemDao.addList(bangdiem);
             listBangdiem = bangdiemDao.readListStudents();
             studentView.showListStudents(listBangdiem);
-            studentView.refreshComboBox();
+            refreshComboBox();
         }
+    }
+
+    public void refreshComboBox(){
+        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
+        List<String> monhocList = new ArrayList<String>();
+        List<String> mssvList = new ArrayList<String>();
+
+        for (BangdiemEntity bd : bangdiem){
+            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
+            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
+            if (!monhocList.contains(monhoc)) {
+                monhocList.add(monhoc);
+            }
+            if (!mssvList.contains(sinhvien)) {
+                mssvList.add(sinhvien);
+            }
+        }
+        studentView.setLop(monhocList.toArray(new String[0]));
+        monhocList.add(0, "Tất cả");
+        studentView.setChonlop(monhocList.toArray(new String[0]));
+        studentView.setMssv(mssvList.toArray(new String[0]));
+        studentView.refreshComboBox();
     }
 
     class ListStudentSelectionListener implements ListSelectionListener {

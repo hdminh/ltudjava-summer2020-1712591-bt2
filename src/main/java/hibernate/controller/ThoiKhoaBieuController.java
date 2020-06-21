@@ -21,26 +21,21 @@ public class ThoiKhoaBieuController {
     private List<MonhocEntity> listMonhoc;
 
     public ThoiKhoaBieuController(){
+        this.tkbView = new ThoiKhoaBieuView();
         monhocDao = new MonhocDao();
         listMonhoc = monhocDao.readListMonhoc();
-    }
-
-    public Container showContentPane(){
-        return tkbView.getContentPane();
-    }
-
-    public ThoiKhoaBieuController(ThoiKhoaBieuView view) {
-        this.tkbView = view;
-        monhocDao = new MonhocDao();
-        listMonhoc = monhocDao.readListMonhoc();
-        view.addAddMonhocListener(new AddStudentListener());
-        view.addEditMonhocListener(new EditStudentListener());
-        view.addDeleteMonhocListener(new DeleteStudentListener());
-        view.addClearListener(new ClearStudentListener());
-        view.addImportListener(new ImportStudentListener());
-        view.addSortListener(new SortStudentListener());
-        view.addListMonhocSelectionListener(new ListStudentSelectionListener());
+        tkbView.addAddMonhocListener(new AddStudentListener());
+        tkbView.addEditMonhocListener(new EditStudentListener());
+        tkbView.addDeleteMonhocListener(new DeleteStudentListener());
+        tkbView.addClearListener(new ClearStudentListener());
+        tkbView.addImportListener(new ImportStudentListener());
+        tkbView.addSortListener(new SortStudentListener());
+        tkbView.addListMonhocSelectionListener(new ListStudentSelectionListener());
         tkbView.showListMonHoc(listMonhoc);
+    }
+
+    public Container getContentPane(){
+        return tkbView.getContentPane();
     }
 
     public void showTkbView() {
@@ -51,15 +46,6 @@ public class ThoiKhoaBieuController {
     public void refreshTable(){
         listMonhoc = monhocDao.readListMonhoc();
         tkbView.showListMonHoc(listMonhoc);
-    }
-
-    public MonhocEntity findMonById(String id){
-        for (MonhocEntity mh: listMonhoc){
-            if (mh.getMamon().equals("id")){
-                return mh;
-            }
-        }
-        return null;
     }
 
     public void onClick() {

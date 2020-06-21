@@ -13,7 +13,6 @@ import java.sql.Date;
 import java.util.Calendar;
 
 public class LichPhucKhaoView extends JFrame implements ActionListener {
-    DotphuckhaoDao dotphuckhaoDao = new DotphuckhaoDao();
 
     private static final long serialVersionUID = 1L;
     private JButton addBtn;
@@ -165,7 +164,7 @@ public class LichPhucKhaoView extends JFrame implements ActionListener {
             DotphuckhaoEntity dot = new DotphuckhaoEntity();
             Date bd = new Date(bdDate.getDate().getTime());
             Date kt = new Date(ktDate.getDate().getTime());
-            System.out.println(bd + "  " + kt);
+            System.out.println(bd + "    " + kt);
             dot.setNgaybatdau(bd);
             dot.setNgayketthuc(kt);
             return dot;

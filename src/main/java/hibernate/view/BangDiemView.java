@@ -17,11 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BangDiemView extends JFrame implements ActionListener {
-    StudentDao studentDao = new StudentDao();
-    MonhocDao monhocDao = new MonhocDao();
-    BangdiemDao bangdiemDao = new BangdiemDao();
-    LophocDao lophocDao = new LophocDao();
-    QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
     String [] chonlop;
     String [] mssv;
@@ -49,6 +44,19 @@ public class BangDiemView extends JFrame implements ActionListener {
     private JTextField ckField;
     private JTextField khacField;
     private JTextField tongField;
+
+    public void setLop(String[] lop) {
+        this.lop = lop;
+    }
+
+    public void setChonlop(String[] chonlop) {
+        this.chonlop = chonlop;
+    }
+
+    public void setMssv(String[] mssv) {
+        this.mssv = mssv;
+    }
+
     private JComboBox svBox;
     private JComboBox lopBox;
     private JComboBox chonlopBox;
@@ -58,10 +66,9 @@ public class BangDiemView extends JFrame implements ActionListener {
     private Object data = new Object [][] {};
 
     public BangDiemView() {
-        initComponents();
     }
 
-    private void initComponents() {
+    public void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // khởi tạo các phím chức năng
         addStudentBtn = new JButton("Thêm");
@@ -81,25 +88,7 @@ public class BangDiemView extends JFrame implements ActionListener {
         chonlopLabel = new JLabel("Chọn lớp");
         dauLabel = new JLabel("Đậu: 0 (0%)");
         rotLabel = new JLabel("Rớt: 0 (0%)");
-        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
-        List<String> monhocList = new ArrayList<String>();
-        List<String> mssvList = new ArrayList<String>();
 
-        for (BangdiemEntity bd : bangdiem){
-            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
-            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
-            if (!monhocList.contains(monhoc)) {
-                monhocList.add(monhoc);
-            }
-            if (!mssvList.contains(sinhvien)) {
-                mssvList.add(sinhvien);
-            }
-        }
-
-        lop = monhocList.toArray(new String[0]);
-        monhocList.add(0, "Tất cả");
-        chonlop = monhocList.toArray(new String[0]);
-        mssv = mssvList.toArray(new String[0]);
         gkField = new JTextField(15);
         ckField = new JTextField(15);
         khacField = new JTextField(15);
@@ -435,7 +424,7 @@ public class BangDiemView extends JFrame implements ActionListener {
         return index;
     }
 
-    public void sort(int index, StudentDao studentDao){
+    public void sort(int index, BangdiemDao bangdiemDao){
 
 
         if (index == 0) {
@@ -452,24 +441,7 @@ public class BangDiemView extends JFrame implements ActionListener {
     }
 
     public void refreshComboBox(){
-        List<BangdiemEntity> bangdiem = bangdiemDao.readListStudents();
-        List<String> monhocList = new ArrayList<String>();
-        List<String> mssvList = new ArrayList<String>();
 
-        for (BangdiemEntity bd : bangdiem){
-            String monhoc = bd.getLophoc().getMalop() + "-" + bd.getMonhoc();
-            String sinhvien = bd.getSinhvien() + "-" + bd.getHoten();
-            if (!monhocList.contains(monhoc)) {
-                monhocList.add(monhoc);
-            }
-            if (!mssvList.contains(sinhvien)) {
-                mssvList.add(sinhvien);
-            }
-        }
-        lop = monhocList.toArray(new String[0]);
-        monhocList.add(0, "Tất cả");
-        chonlop = monhocList.toArray(new String[0]);
-        mssv = mssvList.toArray(new String[0]);
         int sortsize = chonlop.length;
         int index = 0;
         if (chonlopBox.getItemCount() > 0) {

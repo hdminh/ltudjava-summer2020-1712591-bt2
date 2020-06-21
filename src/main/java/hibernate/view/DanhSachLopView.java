@@ -2,12 +2,8 @@ package hibernate.view;
 
 import hibernate.controller.QuanLySinhVienController;
 import hibernate.dao.DanhsachlopDao;
-import hibernate.dao.LophocDao;
-import hibernate.dao.MonhocDao;
-import hibernate.dao.StudentDao;
 import hibernate.entity.DanhsachlopEntity;
 import hibernate.entity.LophocEntity;
-import hibernate.entity.MonhocEntity;
 import hibernate.entity.SinhvienEntity;
 
 import javax.swing.*;
@@ -20,10 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DanhSachLopView extends JFrame implements ActionListener {
-    StudentDao studentDao = new StudentDao();
-    MonhocDao monhocDao = new MonhocDao();
-    LophocDao lophocDao = new LophocDao();
-    DanhsachlopDao svhocmonDao = new DanhsachlopDao();
     QuanLySinhVienController qlsvController = new QuanLySinhVienController();
     String [] lop;
     String [] chonmon;
@@ -51,11 +43,26 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             "STT", "MSSV", "Họ Tên", "CMND", "Giới tính", "Lớp"};
     private Object data = new Object [][] {};
 
-    public DanhSachLopView() {
-        initComponents();
+    public void setLop(String[] lop) {
+        this.lop = lop;
     }
 
-    private void initComponents() {
+    public void setChonmon(String[] chonmon) {
+        this.chonmon = chonmon;
+    }
+
+    public void setChonlop(String[] chonlop) {
+        this.chonlop = chonlop;
+    }
+
+    public void setMssv(String[] mssv) {
+        this.mssv = mssv;
+    }
+
+    public DanhSachLopView() {
+    }
+
+    public void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // khởi tạo các phím chức năng
         addStudentBtn = new JButton("Thêm");
@@ -68,29 +75,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         lopLabel = new JLabel("Lớp");
         chonlopLabel = new JLabel("Chọn lớp");
         chonmonLabel = new JLabel("Chọn môn");
-        List<MonhocEntity> monhoc = monhocDao.readListMonhoc();
-        List<SinhvienEntity> sinhvien = studentDao.readListStudents();
-        List<String> monhocList = new ArrayList<String>();
-        List<String> lophocList = lophocDao.readMaLop();
-        List<String> mssvList = new ArrayList<String>();
-        for (MonhocEntity mh : monhoc){
-            String mamon = mh.getMamon();
-            String malop = mh.getLophoc().getMalop();
-            monhocList.add(malop + "-" + mamon);
-        }
 
-        for (SinhvienEntity sv: sinhvien){
-            String mssv = sv.getMssv();
-            String ten = sv.getHoten();
-            mssvList.add(mssv + "-" + ten);
-        }
-
-        lop = monhocList.toArray(new String[0]);
-        monhocList.add(0, "Tất cả");
-        lophocList.add(0, "Tất cả");
-        chonmon = monhocList.toArray(new String[0]);
-        chonlop = lophocList.toArray(new String[0]);
-        mssv = mssvList.toArray(new String[0]);
         svBox = new JComboBox(mssv);
         lopBox = new JComboBox(lop);
         chonlopBox = new JComboBox(chonlop);
@@ -321,28 +306,28 @@ public class DanhSachLopView extends JFrame implements ActionListener {
         return index;
     }
 
-    public void sortMon(int index, StudentDao studentDao){
+    public void sortMon(int index, DanhsachlopDao danhsachlopDao){
 
         if (index == 0) {
             if (chonlopBox.getSelectedIndex() > 0){
-                showListStudents(svhocmonDao.readListStudentsByLop(chonlopBox.getSelectedItem().toString().trim()));
+                showListStudents(danhsachlopDao.readListStudentsByLop(chonlopBox.getSelectedItem().toString().trim()));
             }
             else{
-                List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
+                List<DanhsachlopEntity> sinhvien = danhsachlopDao.readListStudents();
                 showListStudents(sinhvien);
             }
         }
         else{
             String[] split = chonmon[index].split("-");
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListByMon(split[1]);
+            List<DanhsachlopEntity> sinhvien = danhsachlopDao.readListByMon(split[1]);
             showListStudents(sinhvien);
         }
     }
 
-    public void sortLop(int index, StudentDao studentDao){
+    public void sortLop(int index, DanhsachlopDao danhsachlopDao){
 
         if (index == 0) {
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudents();
+            List<DanhsachlopEntity> sinhvien = danhsachlopDao.readListStudents();
             showListStudents(sinhvien);
             int sortsize = chonmon.length;
             int indexBox = 0;
@@ -355,7 +340,7 @@ public class DanhSachLopView extends JFrame implements ActionListener {
             }
         }
         else{
-            List<DanhsachlopEntity> sinhvien = svhocmonDao.readListStudentsByLop(chonlop[index]);
+            List<DanhsachlopEntity> sinhvien = danhsachlopDao.readListStudentsByLop(chonlop[index]);
             chonmonBox.removeAllItems();
             chonmonBox.addItem(chonmon[0]);
             for (String s: chonmon){
@@ -369,29 +354,6 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     }
 
     public void refreshComboBox(){
-        List<MonhocEntity> monhoc = monhocDao.readListMonhoc();
-        List<SinhvienEntity> sinhvien = studentDao.readListStudents();
-        List<String> monhocList = new ArrayList<String>();
-        List<String> lophocList = lophocDao.readMaLop();
-        List<String> mssvList = new ArrayList<String>();
-        for (MonhocEntity mh : monhoc){
-            String mamon = mh.getMamon();
-            String malop = mh.getLophoc().getMalop();
-            monhocList.add(malop + "-" + mamon);
-        }
-
-        for (SinhvienEntity sv: sinhvien){
-            String mssv = sv.getMssv();
-            String ten = sv.getHoten();
-            mssvList.add(mssv + "-" + ten);
-        }
-
-        lop = monhocList.toArray(new String[0]);
-        monhocList.add(0, "Tất cả");
-        lophocList.add(0, "Tất cả");
-        chonmon = monhocList.toArray(new String[0]);
-        chonlop = lophocList.toArray(new String[0]);
-        mssv = mssvList.toArray(new String[0]);
         int sortsize = chonmon.length;
         int index = 0;
         if (chonmonBox.getItemCount() > 0) {
@@ -431,6 +393,5 @@ public class DanhSachLopView extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-
     }
 }
