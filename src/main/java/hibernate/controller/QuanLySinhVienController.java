@@ -142,9 +142,9 @@ public class QuanLySinhVienController {
         }
     }
 
-        class ListStudentSelectionListener implements ListSelectionListener {
-            public void valueChanged(ListSelectionEvent e) {
-                studentView.fillStudentFromSelectedRow();
-            }
+    class ListStudentSelectionListener implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) {
+            studentView.fillStudentFromSelectedRow();
         }
+    }
 }

@@ -62,7 +62,7 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // khởi tạo các phím chức năng
-        edtBtn = new JButton("Thêm");
+        edtBtn = new JButton("Cập nhật");
         clearBtn = new JButton("Nhập lại");
         edtBtn.setPreferredSize(new Dimension(100, 30));
         clearBtn.setPreferredSize(new Dimension(100, 30));
@@ -223,6 +223,12 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
         monhocField.setText(phuckhaoTable.getModel().getValueAt(row, 2).toString());
         cotdiemField.setText(phuckhaoTable.getModel().getValueAt(row, 3).toString());
         diemTruocField.setText(phuckhaoTable.getModel().getValueAt(row, 4).toString().trim());
+        if (phuckhaoTable.getModel().getValueAt(row, 5) != null) {
+            diemSauField.setText(phuckhaoTable.getModel().getValueAt(row, 5).toString().trim());
+        }
+        else {
+            diemSauField.setText("");
+        }
         lydoArea.setText(phuckhaoTable.getModel().getValueAt(row, 6).toString());
         trangthaiBox.setSelectedItem(phuckhaoTable.getModel().getValueAt(row, 7));
         dotPKField.setText(phuckhaoTable.getModel().getValueAt(row, 8).toString());
@@ -234,6 +240,7 @@ public class DonPhucKhaoView extends JFrame implements ActionListener {
         monhocField.setText("");
         cotdiemField.setText("");
         diemTruocField.setText("");
+        diemSauField.setText("");
         lydoArea.setText("");
         trangthaiBox.setSelectedIndex(0);
         dotPKField.setText("");

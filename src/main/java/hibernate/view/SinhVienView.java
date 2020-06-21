@@ -1,13 +1,6 @@
 package hibernate.view;
 
-import hibernate.controller.DoiMatKhauController;
-import hibernate.controller.SinhVienPhucKhaoController;
-import hibernate.controller.SinhVienXemDiemController;
-import hibernate.entity.UserEntity;
-
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,13 +15,17 @@ public class SinhVienView extends JFrame implements ActionListener {
 
     private void initComponents() {
         pane = new JTabbedPane();
+        logoutBtn = new JButton("Đăng xuất");
         this.add(pane, BorderLayout.CENTER);
-        pane.add(logoutBtn);
-
         this.pack();
         this.setTitle("Portal HCMUS");
         this.setSize(1000, 700);
         this.setResizable(false);
+    }
+
+    public void addLogout(){
+        pane.add(new JPanel(), 3);
+        pane.setTabComponentAt(3, logoutBtn);
     }
 
     public void addTab(String text, Container container){
@@ -36,6 +33,9 @@ public class SinhVienView extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+    }
 
+    public void addLogoutListener(ActionListener listener) {
+        logoutBtn.addActionListener(listener);
     }
 }

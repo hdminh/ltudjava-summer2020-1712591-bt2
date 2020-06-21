@@ -18,8 +18,8 @@ public class DoiMatKhauController {
         isLogin = user;
         this.userDao = new UserDao();
         doiMatKhauView.addCommitListener(new DoiMatKhauController.CommitListener());
-        doiMatKhauView.addLogoutListener(new DoiMatKhauController.LogoutListener());
     }
+
 
     public Container getContentPane() {
         return doiMatKhauView.getContentPane();

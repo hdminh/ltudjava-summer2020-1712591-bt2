@@ -13,7 +13,6 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
     private JPasswordField newField;
     private JPasswordField retypeField;
     private JButton commitBtn;
-    private JButton logoutBtn;
 
     public DoiMatKhauView(){
         initComponents();
@@ -28,9 +27,6 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
         newField = new JPasswordField(20);
         retypeField = new JPasswordField(20);
         commitBtn = new JButton();
-        logoutBtn = new JButton();
-
-        logoutBtn.setText("Đăng xuất");
         commitBtn.setText("Xác nhận");
 
         SpringLayout layout = new SpringLayout();
@@ -46,7 +42,6 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
         panel.add(retypeField);
 
         panel.add(commitBtn);
-        panel.add(logoutBtn);
 
         layout.putConstraint(SpringLayout.WEST, oldLabel, 300, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, oldLabel, 80, SpringLayout.NORTH, panel);
@@ -69,8 +64,6 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
         layout.putConstraint(SpringLayout.WEST, commitBtn, 200, SpringLayout.WEST, retypeLabel);
         layout.putConstraint(SpringLayout.NORTH, commitBtn, 40, SpringLayout.NORTH, retypeLabel);
 
-        layout.putConstraint(SpringLayout.WEST, logoutBtn, 800, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, logoutBtn, 500, SpringLayout.NORTH, panel);
 
         this.add(panel);
         this.getRootPane().setDefaultButton(commitBtn);
@@ -94,10 +87,6 @@ public class DoiMatKhauView extends JFrame implements ActionListener {
 
     public String getRetypeField(){
         return String.copyValueOf(retypeField.getPassword()).trim();
-    }
-
-    public void addLogoutListener(ActionListener listener){
-        logoutBtn.addActionListener(listener);
     }
 
     public void addCommitListener(ActionListener listener) {

@@ -69,15 +69,11 @@ public class LoginController {
         loginView.setVisible(true);
     }
 
-    public UserEntity getIsLoginUser(){
-        return isLogin;
-    }
-
     class LoginListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             UserEntity user = loginView.getUser();
-            System.out.println("user: " + user.getUsername() + "  " + user.getPassword());
-            if ((user.getUsername().equals(giaovu.getUsername())) && user.getPassword().equals(giaovu.getPassword())) {
+
+            if (user.getUsername().equals("giaovu") && listUsers.contains(user)) {
                 //giao vu
                 isLogin = user;
                 mainController = new MainController(isLogin);

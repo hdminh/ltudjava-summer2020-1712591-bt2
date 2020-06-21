@@ -6,6 +6,8 @@ import hibernate.view.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainController {
     MainView mainView;
@@ -37,8 +39,10 @@ public class MainController {
         mainView.addTab("Lịch phúc khảo", lichPhucKhaoController.getContentPane());
         mainView.addTab("Xem phúc khảo", donPhucKhaoController.getContentPane());
         mainView.addTab("Thêm", doiMatKhauController.getContentPane());
+        mainView.addLogout();
 
         mainView.addChangeListener(changeListener);
+        mainView.addLogoutListener(new MainController.LogoutListener());
     }
 
     public void showMainView(){
@@ -68,4 +72,13 @@ public class MainController {
             }
         }
     };
+
+    class LogoutListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            mainView.setVisible(false);
+            LoginController loginController = new LoginController();
+            loginController.showLoginView();
+        }
+    }
+
 }
